@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand Guideline Malerprofis</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fefefe; --ink:#141414; --card:#fff; --soft:#f9fafb; --chip:#f3f4f6; --line:#e5e7eb;
+    --muted:#6b7280; --faint:#9ca3af;
+    --blue:#3981b7; --green:#40a56d;
+    --red-bg:#fef2f2; --red-line:#fee2e2; --red:#dc2626;
+    --amb-bg:#fffbeb; --amb-line:#fef3c7; --amb:#92400e;
+    --ok-bg:#ecfdf5; --ok-line:#d1fae5; --ok:#047857;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1318; --ink:#e3e9ef; --card:#161d25; --soft:#1c252f; --chip:#1c252f; --line:#2a3541;
+    --muted:#8e9bab; --faint:#6b7886; --blue:#6aa9dc; --green:#5cc58e;
+    --red-bg:#2a1719; --red-line:#4a2226; --red:#f87171;
+    --amb-bg:#2a2210; --amb-line:#4a3a14; --amb:#f0c36a;
+    --ok-bg:#112a1e; --ok-line:#1c4a33; --ok:#6ee7b7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  main{max-width:880px;margin:0 auto;padding:24px 16px 80px}
+  h1{font-size:30px;margin:0 0 4px;font-weight:700}
+  h2{font-size:20px;font-weight:700;margin:40px 0 12px}
+  .label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .lead{color:var(--muted);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid color-mix(in srgb,var(--ink) 6%,transparent);border-radius:24px;padding:24px;box-shadow:0 1px 2px rgb(0 0 0/.05);margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .sw{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+  .sw i{display:block;height:64px}
+  .sw div{padding:8px 12px;font-size:12px}
+  .sw b{display:block;font-size:13px}
+  code,.mono{font-family:"JetBrains Mono",monospace;font-size:12px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px}
+  button{font:inherit;cursor:pointer}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 20px;font-weight:700;transition:background .15s}
+  .primary{background:var(--blue);color:#fff}.primary:hover{opacity:.9}
+  .secondary{background:var(--chip);color:var(--ink)}
+  .danger{background:var(--red-bg);color:var(--red)}
+  .field{width:100%;padding:12px;background:var(--soft);border:1px solid var(--line);border-radius:12px;font:inherit;color:var(--ink)}
+  .field:focus{outline:0;box-shadow:0 0 0 2px color-mix(in srgb,var(--blue) 40%,transparent)}
+  .chip{display:inline-flex;gap:6px;align-items:center;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:500}
+  .msg{border-radius:12px;padding:12px;font-size:14px;border:1px solid;margin:8px 0}
+  .m-red{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+  .m-amb{background:var(--amb-bg);border-color:var(--amb-line);color:var(--amb)}
+  .m-ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+  .rad{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+  .rad div{background:var(--chip);border:1px solid var(--line);padding:16px 12px;font-size:12px;text-align:center}
+  table{border-collapse:collapse;width:100%}
+  td,th{text-align:left;padding:8px 8px;border-top:1px solid var(--line);font-size:13px;vertical-align:top}
+  th{border-top:0}
+  pre{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;font-size:12px;line-height:1.5}
+  .dd{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:600px){.dd{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <div class="label">Brand Guideline</div>
+      <h1>Malerprofis Uderstadt</h1>
+      <p class="lead" style="margin:0">Feines Handwerk: weiß, ruhig, ein Blau, ein Grün, große Rundungen.</p>
+    </div>
+    <button class="btn secondary" id="theme">Dunkel</button>
+  </div>
+
+  <h2>Logo</h2>
+  <div class="card" style="text-align:center;background:#fefefe">
+    <img src="../public/icons/logo.png" alt="Logo malerprofis.uderstadt" style="height:80px;width:auto">
+    <p class="lead" style="margin:12px 0 0;color:#6b7280">Nur auf Weiß · Höhe 80 px im Login · Freiraum = Höhe des „m“ · nie verzerren</p>
+  </div>
+
+  <h2>Farben</h2>
+  <div class="grid">
+    <div class="sw"><i style="background:#3981b7"></i><div><b>Blau</b><code>#3981b7</code><br>Aktion, Links, Fokus</div></div>
+    <div class="sw"><i style="background:#40a56d"></i><div><b>Grün</b><code>#40a56d</code><br>Bestätigung, 2. Datenfarbe</div></div>
+    <div class="sw"><i style="background:#fefefe;border-bottom:1px solid #e5e7eb"></i><div><b>Hintergrund</b><code>#fefefe</code></div></div>
+    <div class="sw"><i style="background:#141414"></i><div><b>Tinte</b><code>#141414</code><br>Text, Hairlines /5–/10</div></div>
+    <div class="sw"><i style="background:#f3f4f6"></i><div><b>Fläche</b><code>gray-100 #f3f4f6</code></div></div>
+    <div class="sw"><i style="background:#f9fafb;border-bottom:1px solid #e5e7eb"></i><div><b>Feld</b><code>gray-50 #f9fafb</code></div></div>
+    <div class="sw"><i style="background:#e5e7eb"></i><div><b>Linie</b><code>gray-200 #e5e7eb</code></div></div>
+    <div class="sw"><i style="background:#6b7280"></i><div><b>Gedämpft</b><code>gray-500 #6b7280</code></div></div>
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <div class="sw"><i style="background:#fef2f2"></i><div><b>Fehler</b><code>red-50 / red-600</code></div></div>
+    <div class="sw"><i style="background:#fffbeb"></i><div><b>Warnung</b><code>amber-50 / amber-800</code></div></div>
+    <div class="sw"><i style="background:#ecfdf5"></i><div><b>Erfolg</b><code>emerald-50 / emerald-700</code></div></div>
+  </div>
+
+  <h2>Typografie</h2>
+  <div class="card">
+    <div class="label">Feldlabel · text-xs bold uppercase tracking-wider</div>
+    <h1 style="margin-top:12px">Seitentitel 30/700</h1>
+    <div style="font-size:20px;font-weight:700">Kartentitel 20/700</div>
+    <p style="margin:8px 0">Fließtext 14/400 in Inter. Kurze, sachliche deutsche Sätze.</p>
+    <p class="mono" style="margin:0">JetBrains Mono – Codes &amp; Zeiten: 050-7 · 07:30–16:00 · v2.18.0</p>
+  </div>
+
+  <h2>Bausteine</h2>
+  <div class="card">
+    <div class="label" style="margin-bottom:4px">E-Mail</div>
+    <input class="field" placeholder="name@firma.de">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+      <button class="btn primary">Anmelden</button>
+      <button class="btn secondary">Abbrechen</button>
+      <button class="btn danger">Löschen</button>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+      <span class="chip">Baustelle Nord ✕</span><span class="chip">Fassade</span>
+    </div>
+    <div class="msg m-red">Fehler: Zugangsdaten stimmen nicht.</div>
+    <div class="msg m-amb">Hinweis: Einsatz überschneidet sich.</div>
+    <div class="msg m-ok">Gespeichert.</div>
+  </div>
+
+  <h2>Rundungen &amp; Tiefe</h2>
+  <div class="card rad">
+    <div style="border-radius:24px">Karte<br><b>3xl</b></div>
+    <div style="border-radius:12px">Button/Feld<br><b>xl</b></div>
+    <div style="border-radius:8px">Klein<br><b>lg</b></div>
+    <div style="border-radius:999px">Chip<br><b>full</b></div>
+  </div>
+  <p class="lead">Tiefe durch Hairline <code>border-[#141414]/5</code> + <code>shadow-sm</code>. Größere Schatten nur bei schwebenden Menüs.</p>
+
+  <h2>Regeln in Kürze</h2>
+  <div class="dd">
+    <div class="card"><b>Do</b><ul><li>Weiß, Hairline, große Rundung</li><li>Blau als einzige Aktionsfarbe</li><li>Großbuchstaben-Labels</li><li>Lucide-Icons 16–20 px</li><li>Deutsch, kurz, sachlich</li></ul></div>
+    <div class="card"><b>Don’t</b><ul><li>Verläufe, Neon, Glas</li><li>Logo auf Farbflächen</li><li>Zweites Blau/Grün als Button</li><li>Eckige Karten, schwere Schatten</li><li>Signalfarben als Deko</li></ul></div>
+  </div>
+
+  <h2>CSS-Variablen für Artefakte</h2>
+<pre>:root{
+  --bg:#fefefe; --ink:#141414; --card:#fff; --soft:#f9fafb; --chip:#f3f4f6;
+  --line:#e5e7eb; --muted:#6b7280;
+  --blue:#3981b7; --green:#40a56d;
+  --red-bg:#fef2f2; --red:#dc2626;
+  --amb-bg:#fffbeb; --amb:#92400e;
+  --ok-bg:#ecfdf5;  --ok:#047857;
+}
+/* Dunkel: bg #0e1318, card #161d25, ink #e3e9ef, line #2a3541, blue #6aa9dc */
+body{font:400 14px/1.55 Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+.card{background:var(--card);border:1px solid rgb(20 20 20/.05);border-radius:24px;padding:24px;box-shadow:0 1px 2px rgb(0 0 0/.05)}
+.btn{background:var(--blue);color:#fff;font-weight:700;border:0;border-radius:12px;padding:12px 20px}</pre>
+  <p class="lead">Vollständige Beschreibung: <code>brand-guideline.md</code>.</p>
+</main>
+<script>
+  const b=document.getElementById('theme'),r=document.documentElement;
+  b.onclick=()=>{const d=r.dataset.theme==='dark';r.dataset.theme=d?'light':'dark';b.textContent=d?'Dunkel':'Hell'};
+</script>
+</body>
+</html>
