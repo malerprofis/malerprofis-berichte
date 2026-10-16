@@ -340,7 +340,12 @@ export async function fetchSafetyFiles(options: { quiet?: boolean } = {}): Promi
   return (data ?? []) as SafetyFile[];
 }
 
-export async function uploadSafetyFile(file: File, position: number, uploadedBy: string): Promise<void> {
+export async function uploadSafetyFile(
+  file: File,
+  position: number,
+  uploadedBy: string,
+  folder: string | null = null,
+): Promise<void> {
   checkSafetyPdf(file);
   const path = await putSafetyPdf(file);
   const { error } = await supabase.from('safety_files').insert({
@@ -349,6 +354,9 @@ export async function uploadSafetyFile(file: File, position: number, uploadedBy:
     size_bytes: file.size,
     position,
     uploaded_by: uploadedBy,
+    // Nur mitschicken, wenn es einen Ordner gibt: So klappt das Hochladen auch,
+    // solange 0021 noch nicht eingespielt ist.
+    ...(folder && { folder }),
   });
   if (error) {
     await supabase.storage.from(BUCKET).remove([path]);
@@ -386,4 +394,58 @@ export async function deleteSafetyFile(file: SafetyFile): Promise<void> {
   if (error) safetyFail('Datei konnte nicht gelöscht werden', error);
   const { error: storageError } = await supabase.storage.from(BUCKET).remove([file.path]);
   if (storageError) console.error('Datei konnte nicht entfernt werden:', storageError.message);
+}
+
+/** Verschiebt eine Sicherheitsunterlage in einen anderen Unterordner (null = keiner). */
+export async function moveSafetyFile(id: string, folder: string | null): Promise<void> {
+  const { error } = await supabase.from('safety_files').update({ folder }).eq('id', id);
+  if (error) {
+    if (error.message.includes('folder')) {
+      throw new Error(
+        'Unterordner sind in der Datenbank noch nicht angelegt. Bitte einmalig ' +
+          'supabase/migrations/0021_safety_folders_and_archive.sql im Supabase-SQL-Editor ausführen.',
+      );
+    }
+    safetyFail('Datei konnte nicht verschoben werden', error);
+  }
+}
+
+/** Benennt einen Unterordner um — alle Dateien darin wandern mit. */
+export async function renameSafetyFolder(from: string, to: string): Promise<void> {
+  const { error } = await supabase.from('safety_files').update({ folder: to }).eq('folder', from);
+  if (error) safetyFail('Ordner konnte nicht umbenannt werden', error);
+}
+
+// ---------------------------------------------------------------------------
+// Archivieren mit Aufräumen
+// ---------------------------------------------------------------------------
+
+/** Alle Nachrichten einer Baustelle, älteste zuerst — für den Export. */
+export async function fetchAllSiteMessages(siteId: string): Promise<SiteMessage[]> {
+  const PAGE = 1000;
+  const all: SiteMessage[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from('site_messages')
+      .select('*')
+      .eq('site_id', siteId)
+      .order('created_at', { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error) fail('Nachrichten konnten nicht geladen werden', error, 'site_messages');
+    all.push(...((data ?? []) as SiteMessage[]));
+    if (!data || data.length < PAGE) return all;
+  }
+}
+
+/**
+ * Räumt eine Baustelle beim Archivieren leer: erst die Dateien, dann der Chat,
+ * zuletzt das Archiv-Kennzeichen. Bricht ein Schritt ab, bleibt die Baustelle
+ * aktiv, und das Büro kann es noch einmal versuchen — der Export liegt dann
+ * schon auf dem Gerät.
+ */
+export async function archiveAndPurgeSite(siteId: string): Promise<void> {
+  await deleteSiteFiles(await fetchSiteFiles(siteId));
+  const { error } = await supabase.from('site_messages').delete().eq('site_id', siteId);
+  if (error) fail('Chat konnte nicht gelöscht werden', error, 'site_messages');
+  await setSiteActive(siteId, false);
 }

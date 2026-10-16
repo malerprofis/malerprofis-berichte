@@ -257,6 +257,8 @@ export interface SafetyFile {
   path: string;
   size_bytes: number;
   position: number;
+  /** Unterordner (0021). null: liegt direkt in „Arbeitssicherheit". */
+  folder?: string | null;
   uploaded_by: string | null;
   updated_at: string;
   created_at: string;

@@ -1,4 +1,4 @@
-import type { Site, SiteFile } from './database.types.ts';
+import type { SafetyFile, Site, SiteFile } from './database.types.ts';
 
 /**
  * Fachliche Regeln des Bereichs „Projekte" — bewusst ohne Datenbankzugriff,
@@ -143,3 +143,58 @@ export function parseHours(raw: string): number | null | 'ungültig' {
 }
 
 export const INVALID_HOURS = 'Bitte eine Stundenzahl größer als 0 angeben oder das Feld leeren.';
+
+// ---------------------------------------------------------------------------
+// Arbeitssicherheit
+// ---------------------------------------------------------------------------
+
+/** Ordnername aus einer Eingabe. Leer heißt: kein Unterordner. */
+export function cleanFolder(raw: string | null | undefined): string | null {
+  const trimmed = (raw ?? '').trim().replace(/\s+/g, ' ');
+  return trimmed || null;
+}
+
+export interface SafetyGroups {
+  /** Dateien direkt im Ordner „Arbeitssicherheit". */
+  loose: SafetyFile[];
+  /** Unterordner, alphabetisch; darin die Dateien in ihrer Reihenfolge. */
+  folders: { name: string; files: SafetyFile[] }[];
+}
+
+/**
+ * Teilt die Sicherheitsunterlagen nach Unterordnern auf. `extraFolders` sind
+ * Ordner, die das Büro gerade angelegt, aber noch nicht befüllt hat.
+ */
+export function groupSafetyFiles(files: SafetyFile[], extraFolders: string[] = []): SafetyGroups {
+  const byFolder = new Map<string, SafetyFile[]>();
+  const loose: SafetyFile[] = [];
+  for (const name of extraFolders) {
+    const folder = cleanFolder(name);
+    if (folder && !byFolder.has(folder)) byFolder.set(folder, []);
+  }
+  for (const file of files) {
+    const folder = cleanFolder(file.folder);
+    if (!folder) {
+      loose.push(file);
+      continue;
+    }
+    const list = byFolder.get(folder) ?? [];
+    list.push(file);
+    byFolder.set(folder, list);
+  }
+  const folders = [...byFolder.entries()]
+    .sort(([a], [b]) => a.localeCompare(b, 'de', { numeric: true }))
+    .map(([name, list]) => ({ name, files: list }));
+  return { loose, folders };
+}
+
+// ---------------------------------------------------------------------------
+// Archivieren
+// ---------------------------------------------------------------------------
+
+/** „Chat_214-5_2026-10-16.pdf" — ohne Zeichen, die ein Dateisystem nicht mag. */
+export function chatExportFileName(siteNumber: string, date: Date): string {
+  const number = (siteNumber || 'Baustelle').replace(/[\/:*?"<>|]/g, '-').trim();
+  const day = date.toISOString().slice(0, 10);
+  return `Chat_${number}_${day}.pdf`;
+}
