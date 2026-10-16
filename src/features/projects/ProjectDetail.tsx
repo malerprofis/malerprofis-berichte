@@ -3,10 +3,12 @@ import { format, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Archive, ArrowLeft, FileText, Loader2, MapPin, Pencil, Trash2, Upload } from 'lucide-react';
 import { fetchPlannedHoursPerSite } from '../../lib/data.ts';
+import { downloadChatPdf } from '../../lib/chat-pdf.ts';
 import {
+  archiveAndPurgeSite,
   deleteSiteFiles,
+  fetchAllSiteMessages,
   fetchSiteFiles,
-  setSiteActive,
   siteFileUrls,
   updateSite,
   updateSiteNotes,
@@ -121,27 +123,65 @@ export default function ProjectDetail({
   };
 
   /**
-   * Archivieren statt löschen: An der Baustelle hängen Berichtszeilen
-   * vergangener Wochen. Die Dateien bleiben liegen, bis das Büro sie löscht.
+   * Archivieren räumt die Baustelle leer, damit sich über die Jahre nichts
+   * ansammelt: Erst geht der Chat als PDF aufs Gerät, dann werden Dateien und
+   * Nachrichten gelöscht, dann wird archiviert.
+   *
+   * Die Baustelle selbst bleibt (archiviert), weil an ihr Berichtszeilen
+   * vergangener Wochen hängen. Gelöscht wird erst, wenn das Büro bestätigt hat,
+   * dass das PDF angekommen ist — ein stiller Fehler beim Herunterladen darf
+   * den Chat nicht kosten.
    */
   const archive = async () => {
     if (
       !window.confirm(
         `„${site.number} – ${site.address}“ archivieren?\n\n` +
-          'Sie verschwindet aus der Liste und allen Auswahlfeldern. Alte Berichte bleiben ' +
-          'unverändert, und zurückholen lässt sie sich jederzeit über das Archiv.',
+          '1. Der Chat wird als PDF auf dieses Gerät heruntergeladen.\n' +
+          `2. Danach werden alle ${files.length} Dateien und der gesamte Chat endgültig gelöscht.\n` +
+          '3. Die Baustelle kommt ins Archiv. Alte Wochenberichte bleiben unverändert.',
       )
     ) {
       return;
     }
-    setBusy('Archiviere …');
     setError(null);
+    setBusy('Erstelle PDF …');
+    let fileName: string;
     try {
-      await setSiteActive(site.id, false);
+      const messages = await fetchAllSiteMessages(site.id);
+      const names = Object.fromEntries(
+        employees.map((e) => [e.id, `${e.first_name} ${e.last_name}`.trim()]),
+      );
+      fileName = await downloadChatPdf({
+        site,
+        messages,
+        names,
+        fileNames: files.map((f) => f.name),
+        exportedAt: new Date(),
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      setBusy(null);
+      return;
+    }
+    setBusy(null);
+
+    if (
+      !window.confirm(
+        `„${fileName}“ wurde heruntergeladen.\n\n` +
+          'Liegt das PDF auf deinem Gerät? Dann jetzt Dateien und Chat löschen und archivieren. ' +
+          'Das lässt sich nicht rückgängig machen.',
+      )
+    ) {
+      return;
+    }
+    setBusy('Lösche und archiviere …');
+    try {
+      await archiveAndPurgeSite(site.id);
       await onArchived();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       setBusy(null);
+      await load();
     }
   };
 

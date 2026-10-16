@@ -520,17 +520,31 @@ im Ordner „Arbeitssicherheit“. **Ersetzen** tauscht eine Datei gegen die neu
 Fassung — sie steht dann sofort auf allen Baustellen, ohne dass du sie einzeln
 austauschen musst.
 
+**Unterordner:** **Neuer Ordner** legt einen an, z. B. „Betriebsanweisungen“.
+Mit **PDF hierher** lädst du direkt hinein; das Auswahlfeld an jeder Datei
+verschiebt sie in einen anderen Ordner. Der Stift benennt einen Ordner um.
+Ein Ordner ohne Datei wird nicht gespeichert.
+
 ### Ändern und archivieren
 
 In der Baustelle oben rechts: Der **Stift** öffnet Nummer, Adresse, Kunde und
 Gesamtstunden zum Ändern. Leere Gesamtstunden nehmen die Baustelle aus der
 Leiste der Wochenplanung; sie bleibt ansonsten unverändert nutzbar.
 
-Der **Archivkasten** legt die Baustelle ins Archiv — er löscht sie nicht.
-Archiviert heißt: Sie verschwindet aus allen Auswahlfeldern, aus der Leiste der
-Wochenplanung und aus der Liste in Projekte. Ihre Dateien bleiben liegen; mit
-**Alle löschen** unter den Unterlagen räumst du sie vorher weg, wenn du Speicher
-sparen willst.
+Der **Archivkasten** räumt die Baustelle auf und legt sie ins Archiv:
+
+1. Der Chat wird als PDF auf dein Gerät heruntergeladen
+   (`Chat_<Nummer>_<Datum>.pdf`). Darin stehen auch die Namen der Dateien, die
+   gleich gelöscht werden.
+2. Die App fragt, ob das PDF angekommen ist. Erst wenn du bestätigst, werden
+   **alle Dateien und der gesamte Chat endgültig gelöscht**. Brichst du hier ab,
+   bleibt alles, wie es war.
+3. Die Baustelle kommt ins Archiv: Sie verschwindet aus allen Auswahlfeldern,
+   aus der Leiste der Wochenplanung und aus der Liste in Projekte.
+
+> **Das PDF ist danach das Einzige, was vom Chat bleibt.** Leg es in den
+> Projektordner auf dem Büro-Rechner. Brauchst du Pläne oder Fotos noch,
+> lade sie vor dem Archivieren herunter.
 
 > **Gelöscht wird nie:** An einer Baustelle hängen Berichtszeilen vergangener
 > Wochen. Würde sie verschwinden, wären alte Berichte unvollständig. Eine
@@ -541,7 +555,8 @@ sparen willst.
 
 Unter der Liste in Projekte liegt **Archiv** — antippen, und die archivierten
 Baustellen klappen auf. **Zurückholen** macht eine davon wieder aktiv: Sie steht
-sofort wieder in allen Auswahlfeldern, mitsamt ihren Gesamtstunden.
+sofort wieder in allen Auswahlfeldern, mitsamt ihren Gesamtstunden — aber ohne
+Dateien und ohne Chat, die beim Archivieren gelöscht wurden.
 
 ### Die festen Baustellen
 

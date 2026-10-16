@@ -62,6 +62,9 @@ Daten liegt vollständig in den Row-Level-Security-Regeln der Datenbank.
      unter Verwaltung pflegt und die in jedem Projekt ganz oben stehen. Braucht
      `0019_site_files_and_chat.sql`. Fehlt sie, bleibt der Ordner leer und die
      Verwaltung meldet, dass die Migration noch aussteht
+   - `0021_safety_folders_and_archive.sql` — Unterordner für die
+     Arbeitssicherheit. Braucht `0020_safety_files.sql`. Fehlt sie, lassen sich
+     Dateien nicht in Ordner verschieben; alles andere läuft weiter
 3. Unter **Project Settings → API** die Projekt-URL und den `anon`-Key notieren.
 
 ### 2. Zugangsdaten hinterlegen

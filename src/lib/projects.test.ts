@@ -2,7 +2,10 @@
  * Prüft die Regeln des Bereichs „Projekte". Läuft ohne Supabase und ohne Netz.
  */
 import {
+  chatExportFileName,
+  cleanFolder,
   cleanMessage,
+  groupSafetyFiles,
   fileKind,
   formatBytes,
   matchesSearch,
@@ -14,7 +17,7 @@ import {
   siteFilePath,
   storedFileName,
 } from './projects.ts';
-import type { Site } from './database.types.ts';
+import type { SafetyFile, Site } from './database.types.ts';
 
 let failed = 0;
 function check(name: string, actual: unknown, expected: unknown) {
@@ -101,6 +104,26 @@ check('Komma', parseHours('8,5'), 8.5);
 check('leer', parseHours('  '), null);
 check('null ist ungültig', parseHours('0'), 'ungültig');
 check('Text ist ungültig', parseHours('abc'), 'ungültig');
+
+// --- Arbeitssicherheit --------------------------------------------------------
+
+function safety(id: string, folder: string | null): SafetyFile {
+  return { id, name: `${id}.pdf`, path: id, size_bytes: 1, position: 0, folder, uploaded_by: null, updated_at: '', created_at: '' };
+}
+
+check('Ordnername bereinigt', cleanFolder('  Betriebs   anweisungen '), 'Betriebs anweisungen');
+check('leerer Ordner', cleanFolder('  '), null);
+
+const groups = groupSafetyFiles(
+  [safety('a', null), safety('b', 'Unterweisungen'), safety('c', 'Betriebsanweisungen'), safety('d', ' Unterweisungen ')],
+  ['Gefährdungsbeurteilungen', 'Unterweisungen'],
+);
+check('lose Dateien', groups.loose.map((f) => f.id), ['a']);
+check('Ordner alphabetisch, leere dabei', groups.folders.map((f) => f.name),
+  ['Betriebsanweisungen', 'Gefährdungsbeurteilungen', 'Unterweisungen']);
+check('gleicher Ordner trotz Leerzeichen', groups.folders[2].files.map((f) => f.id), ['b', 'd']);
+
+check('Exportname', chatExportFileName('214/5', new Date('2026-10-16T12:00:00Z')), 'Chat_214-5_2026-10-16.pdf');
 
 if (failed > 0) {
   console.log(`\n${failed} Prüfung(en) fehlgeschlagen.`);
