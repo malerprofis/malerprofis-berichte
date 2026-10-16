@@ -249,3 +249,15 @@ export interface SiteMessage {
   body: string;
   created_at: string;
 }
+
+/** Eine Sicherheitsunterlage, die in jedem Projekt erscheint (0020). */
+export interface SafetyFile {
+  id: string;
+  name: string;
+  path: string;
+  size_bytes: number;
+  position: number;
+  uploaded_by: string | null;
+  updated_at: string;
+  created_at: string;
+}

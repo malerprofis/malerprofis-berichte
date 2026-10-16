@@ -1,7 +1,7 @@
 import { supabase } from './supabase.ts';
 import { shrinkPhoto } from './abnahme.ts';
 import { fileKind, MAX_FILE_BYTES, siteFilePath, storedFileName } from './projects.ts';
-import type { SiteFile, SiteMessage } from './database.types.ts';
+import type { SafetyFile, Site, SiteFile, SiteMessage } from './database.types.ts';
 
 /**
  * Datenzugriff für den Bereich „Projekte": Dateien und Chat je Baustelle
@@ -234,4 +234,156 @@ export function subscribeSiteMessages(
   return () => {
     supabase.removeChannel(channel);
   };
+}
+
+// ---------------------------------------------------------------------------
+// Baustellen anlegen und pflegen (früher unter Verwaltung)
+// ---------------------------------------------------------------------------
+
+export interface SiteInput {
+  number: string;
+  address: string;
+  customer: string | null;
+  /** null = nicht hinterlegt. */
+  totalHours: number | null;
+}
+
+function siteColumns(input: SiteInput) {
+  return {
+    number: input.number.trim(),
+    address: input.address.trim(),
+    customer: input.customer?.trim() || null,
+    total_hours: input.totalHours,
+  };
+}
+
+function siteError(was: string, error: { code?: string; message: string }): Error {
+  // 23505: Die Nummer ist schon vergeben (unique auf sites.number).
+  if (error.code === '23505') return new Error('Diese Baustellennummer gibt es schon.');
+  return new Error(`${was}: ${error.message}`);
+}
+
+/** Legt eine Baustelle an und gibt sie zurück, damit die App sie gleich öffnen kann. */
+export async function createSite(input: SiteInput): Promise<Site> {
+  const { data, error } = await supabase
+    .from('sites')
+    .insert(siteColumns(input))
+    .select('*')
+    .single();
+  if (error) throw siteError('Baustelle konnte nicht angelegt werden', error);
+  return data as Site;
+}
+
+export async function updateSite(id: string, input: SiteInput): Promise<void> {
+  const { error } = await supabase.from('sites').update(siteColumns(input)).eq('id', id);
+  if (error) throw siteError('Baustelle konnte nicht gespeichert werden', error);
+}
+
+/**
+ * Archivieren statt löschen: An einer Baustelle hängen Berichtszeilen
+ * vergangener Wochen, die erhalten bleiben müssen.
+ */
+export async function setSiteActive(id: string, active: boolean): Promise<void> {
+  const { error } = await supabase.from('sites').update({ active }).eq('id', id);
+  if (error) throw siteError('Baustelle konnte nicht geändert werden', error);
+}
+
+// ---------------------------------------------------------------------------
+// Ordner „Arbeitssicherheit" (0020)
+// ---------------------------------------------------------------------------
+
+const MISSING_SAFETY =
+  'Der Ordner „Arbeitssicherheit" ist in der Datenbank noch nicht angelegt. Bitte einmalig ' +
+  'supabase/migrations/0020_safety_files.sql im Supabase-SQL-Editor ausführen.';
+
+function safetyFail(was: string, error: { code?: string; message: string }): never {
+  if (isMissing(error, 'safety_files')) throw new Error(MISSING_SAFETY);
+  throw new Error(`${was}: ${error.message}`);
+}
+
+/** Sicherheitsunterlagen sind nur PDFs. */
+function checkSafetyPdf(file: File): void {
+  if (fileKind(file) !== 'document') {
+    throw new Error(`„${file.name}" ist keine PDF.`);
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    throw new Error(`„${file.name}" ist größer als 20 MB.`);
+  }
+}
+
+async function putSafetyPdf(file: File): Promise<string> {
+  const path = `arbeitssicherheit/${crypto.randomUUID()}.pdf`;
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, file, { contentType: 'application/pdf' });
+  if (error) {
+    if (/bucket not found/i.test(error.message)) throw new Error(MISSING_MIGRATION);
+    throw new Error(`„${file.name}" konnte nicht übertragen werden: ${error.message}`);
+  }
+  return path;
+}
+
+/**
+ * Die Sicherheitsunterlagen in ihrer Reihenfolge. Fehlt die Migration, ist der
+ * Ordner im Projekt einfach leer — keine rote Meldung auf jeder Baustelle.
+ */
+export async function fetchSafetyFiles(options: { quiet?: boolean } = {}): Promise<SafetyFile[]> {
+  const { data, error } = await supabase
+    .from('safety_files')
+    .select('*')
+    .order('position', { ascending: true })
+    .order('created_at', { ascending: true });
+  if (error) {
+    if (options.quiet && isMissing(error, 'safety_files')) return [];
+    safetyFail('Sicherheitsunterlagen konnten nicht geladen werden', error);
+  }
+  return (data ?? []) as SafetyFile[];
+}
+
+export async function uploadSafetyFile(file: File, position: number, uploadedBy: string): Promise<void> {
+  checkSafetyPdf(file);
+  const path = await putSafetyPdf(file);
+  const { error } = await supabase.from('safety_files').insert({
+    name: file.name,
+    path,
+    size_bytes: file.size,
+    position,
+    uploaded_by: uploadedBy,
+  });
+  if (error) {
+    await supabase.storage.from(BUCKET).remove([path]);
+    safetyFail(`„${file.name}" konnte nicht gespeichert werden`, error);
+  }
+}
+
+/**
+ * Tauscht eine Sicherheitsunterlage gegen eine neue Fassung. Die Zeile und ihr
+ * Platz im Ordner bleiben; erst wenn sie auf die neue Datei zeigt, wird die
+ * alte gelöscht.
+ */
+export async function replaceSafetyFile(old: SafetyFile, file: File, uploadedBy: string): Promise<void> {
+  checkSafetyPdf(file);
+  const path = await putSafetyPdf(file);
+  const { error } = await supabase
+    .from('safety_files')
+    .update({
+      name: file.name,
+      path,
+      size_bytes: file.size,
+      uploaded_by: uploadedBy,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', old.id);
+  if (error) {
+    await supabase.storage.from(BUCKET).remove([path]);
+    safetyFail(`„${file.name}" konnte nicht gespeichert werden`, error);
+  }
+  await supabase.storage.from(BUCKET).remove([old.path]);
+}
+
+export async function deleteSafetyFile(file: SafetyFile): Promise<void> {
+  const { error } = await supabase.from('safety_files').delete().eq('id', file.id);
+  if (error) safetyFail('Datei konnte nicht gelöscht werden', error);
+  const { error: storageError } = await supabase.storage.from(BUCKET).remove([file.path]);
+  if (storageError) console.error('Datei konnte nicht entfernt werden:', storageError.message);
 }

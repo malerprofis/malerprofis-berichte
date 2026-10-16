@@ -226,6 +226,8 @@ function ReportEntryEditor({
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'wochenbericht' | 'planung' | 'projekte' | 'abnahme' | 'leave' | 'auslagen' | 'admin' | 'settings'>('planung');
+  /** Die im Reiter „Projekte“ geöffnete Baustelle. Hier oben, damit die Wochenplanung dorthin springen kann. */
+  const [projectSiteId, setProjectSiteId] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState(startOfISOWeek(new Date()));
   const { employee: currentUser, signOut } = useAuth();
   const isAdmin = currentUser?.role === 'admin';
@@ -885,7 +887,11 @@ export default function App() {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id as any)}
+              onClick={() => {
+                // Ein Tipp auf „Projekte“ führt immer zur Liste zurück.
+                if (item.id === 'projekte') setProjectSiteId(null);
+                setActiveTab(item.id as any);
+              }}
               className={cn(
                 "flex flex-row items-center gap-3 px-4 py-3 rounded-xl transition-all",
                 activeTab === item.id
@@ -930,6 +936,7 @@ export default function App() {
                     <button
                       key={item.id}
                       onClick={() => {
+                        if (item.id === 'projekte') setProjectSiteId(null);
                         setActiveTab(item.id as any);
                         setIsMobileMenuOpen(false);
                       }}
@@ -1731,6 +1738,8 @@ export default function App() {
                   sites={sites}
                   employees={employees}
                   currentUser={currentUser}
+                  openSiteId={projectSiteId}
+                  onOpenSite={setProjectSiteId}
                   onSitesChanged={reloadData}
                 />
               </motion.div>
@@ -1757,6 +1766,11 @@ export default function App() {
                   sites={sites}
                   canEdit={isAdmin}
                   currentEmployeeId={currentUser?.id}
+                  onOpenSite={(siteId) => {
+                    setProjectSiteId(siteId);
+                    setActiveTab('projekte');
+                    window.scrollTo({ top: 0 });
+                  }}
                 />
               </motion.div>
             )}
@@ -1770,7 +1784,6 @@ export default function App() {
               >
                 <AdminPanel
                   employees={employees}
-                  sites={sites}
                   leaveRequests={leaveRequests}
                   holidays={holidays}
                   assignmentCountInRange={assignmentCountInRange}

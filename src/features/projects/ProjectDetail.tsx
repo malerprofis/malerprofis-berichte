@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { ArrowLeft, FileText, Loader2, Pencil, Trash2, Upload } from 'lucide-react';
+import { Archive, ArrowLeft, FileText, Loader2, MapPin, Pencil, Trash2, Upload } from 'lucide-react';
 import { fetchPlannedHoursPerSite } from '../../lib/data.ts';
 import {
   deleteSiteFiles,
   fetchSiteFiles,
+  setSiteActive,
   siteFileUrls,
+  updateSite,
   updateSiteNotes,
   uploadSiteFile,
 } from '../../lib/project-data.ts';
-import { formatBytes } from '../../lib/projects.ts';
+import { detectPlatform, formatBytes, navigationUrl } from '../../lib/projects.ts';
 import type { Employee, Site, SiteFile } from '../../lib/database.types.ts';
+import SafetyFolder from './SafetyFolder.tsx';
 import SiteChat from './SiteChat.tsx';
+import SiteForm from './SiteForm.tsx';
 
 type Section = 'unterlagen' | 'chat';
 
@@ -29,12 +33,14 @@ export default function ProjectDetail({
   currentUser,
   onBack,
   onSiteChanged,
+  onArchived,
 }: {
   site: Site;
   employees: Employee[];
   currentUser: Employee;
   onBack: () => void;
-  onSiteChanged: () => void;
+  onSiteChanged: () => Promise<void>;
+  onArchived: () => Promise<void>;
 }) {
   const isAdmin = currentUser.role === 'admin';
   const [section, setSection] = useState<Section>('unterlagen');
@@ -46,6 +52,7 @@ export default function ProjectDetail({
   const [error, setError] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesDraft, setNotesDraft] = useState(site.notes ?? '');
+  const [editingSite, setEditingSite] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -106,12 +113,42 @@ export default function ProjectDetail({
     try {
       await updateSiteNotes(site.id, notesDraft);
       setEditingNotes(false);
-      onSiteChanged();
+      await onSiteChanged();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
     setBusy(null);
   };
+
+  /**
+   * Archivieren statt löschen: An der Baustelle hängen Berichtszeilen
+   * vergangener Wochen. Die Dateien bleiben liegen, bis das Büro sie löscht.
+   */
+  const archive = async () => {
+    if (
+      !window.confirm(
+        `„${site.number} – ${site.address}“ archivieren?\n\n` +
+          'Sie verschwindet aus der Liste und allen Auswahlfeldern. Alte Berichte bleiben ' +
+          'unverändert, und zurückholen lässt sie sich jederzeit über das Archiv.',
+      )
+    ) {
+      return;
+    }
+    setBusy('Archiviere …');
+    setError(null);
+    try {
+      await setSiteActive(site.id, false);
+      await onArchived();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      setBusy(null);
+    }
+  };
+
+  const mapsUrl = navigationUrl(
+    site.address,
+    detectPlatform(navigator.userAgent, navigator.maxTouchPoints),
+  );
 
   const documents = files.filter((f) => f.kind === 'document');
   const photos = files.filter((f) => f.kind === 'photo');
@@ -212,6 +249,11 @@ export default function ProjectDetail({
           </p>
         )}
 
+        {/* Immer ganz oben, auch wenn die Baustelle selbst noch nichts hat. */}
+        <div className="mb-4">
+          <SafetyFolder />
+        </div>
+
         {loading ? (
           <Loader2 size={20} className="animate-spin text-brand-accent1" />
         ) : files.length === 0 ? (
@@ -284,7 +326,7 @@ export default function ProjectDetail({
             {isAdmin && (
               <div className="flex items-center justify-between pt-2 border-t border-[#141414]/5 text-xs text-[#141414]/40">
                 <span>
-                  {files.length} Dateien · {formatBytes(totalBytes)}
+                  {files.length} {files.length === 1 ? 'Datei' : 'Dateien'} · {formatBytes(totalBytes)}
                 </span>
                 <button
                   onClick={() =>
@@ -315,12 +357,56 @@ export default function ProjectDetail({
         >
           <ArrowLeft size={18} />
         </button>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-bold">{site.number}</h2>
-          <p className="text-sm text-[#141414]/60">{site.address}</p>
+          {/* Ein Tipp öffnet die Navigations-App des Geräts. */}
+          <a
+            href={mapsUrl}
+            // geo: übernimmt das System; ein neues Fenster bliebe dort leer.
+            target={mapsUrl.startsWith('http') ? '_blank' : undefined}
+            rel="noreferrer"
+            className="inline-flex items-start gap-1.5 text-sm text-brand-accent1 hover:underline"
+          >
+            <MapPin size={16} className="mt-0.5 shrink-0" />
+            <span>{site.address}</span>
+          </a>
           {site.customer && <p className="text-xs text-[#141414]/40">{site.customer}</p>}
         </div>
+        {isAdmin && !editingSite && (
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => setEditingSite(true)}
+              className="p-2 text-gray-500 hover:text-brand-accent1 hover:bg-white rounded-xl cursor-pointer"
+              title="Baustelle bearbeiten"
+              aria-label="Baustelle bearbeiten"
+            >
+              <Pencil size={18} />
+            </button>
+            <button
+              onClick={archive}
+              disabled={busy !== null}
+              className="p-2 text-gray-400 hover:text-[#141414] hover:bg-white rounded-xl cursor-pointer disabled:opacity-50"
+              title="Archivieren"
+              aria-label="Baustelle archivieren"
+            >
+              <Archive size={18} />
+            </button>
+          </div>
+        )}
       </div>
+
+      {editingSite && (
+        <SiteForm
+          site={site}
+          submitLabel="Speichern"
+          onCancel={() => setEditingSite(false)}
+          onSubmit={async (input) => {
+            await updateSite(site.id, input);
+            await onSiteChanged();
+            setEditingSite(false);
+          }}
+        />
+      )}
 
       {error && (
         <p className="text-sm text-red-700 bg-red-50 border border-red-100 rounded-2xl p-4 whitespace-pre-line">

@@ -48,7 +48,7 @@ und kannst.
 
 ### Dein zusätzlicher Reiter
 
-Zu den fünf Reitern der Maler kommt bei dir **Verwaltung** dazu. Dahinter
+Zu den Reitern der Maler kommt bei dir **Verwaltung** dazu. Dahinter
 liegen sechs Bereiche, in der Reihenfolge, in der sie im Büro gebraucht
 werden:
 
@@ -56,8 +56,10 @@ werden:
 2. **Abnahmeprotokolle** — was von den Baustellen hereinkommt.
 3. **Auslagen** — offene Belege und Monatsabschlüsse.
 4. **Urlaubsanträge** — was zu entscheiden ist.
-5. **Baustellen** — der Stamm, aus dem sich alle Felder speisen.
+5. **Arbeitssicherheit** — die PDFs, die in jedem Projekt ganz oben stehen.
 6. **Benutzer** — Konten, Rollen, Farben, Passwörter.
+
+Die Baustellen selbst pflegst du im Reiter **Projekte** (Kapitel 9).
 
 Oben stehen die laufenden Vorgänge, unten die Stammdaten. Was jeden Tag
 gebraucht wird, steht also zuerst.
@@ -73,7 +75,9 @@ gebraucht wird, steht also zuerst.
 | Auslagen prüfen und monatlich abschließen | Verwaltung → Auslagen |
 | Urlaub genehmigen oder ablehnen | Verwaltung → Urlaubsanträge |
 | Resturlaub korrigieren | Verwaltung → Benutzer → Palmensymbol |
-| Baustellen anlegen und archivieren | Verwaltung → Baustellen |
+| Baustellen anlegen, ändern und archivieren | Projekte |
+| Unterlagen und Hinweise an eine Baustelle hängen | Projekte → Baustelle |
+| Unterlagen zur Arbeitssicherheit pflegen | Verwaltung → Arbeitssicherheit |
 | Konten anlegen, Rollen vergeben, Passwörter setzen | Verwaltung → Benutzer |
 | Krankmeldung eintragen | Wochenplanung, Code 050-7 |
 
@@ -210,7 +214,7 @@ Jeder gezogene Block verschwindet aus dem Stapel; löschst du den Einsatz wieder
 kommt er zurück.
 
 In der Leiste stehen **nur Baustellen, für die du Gesamtstunden hinterlegt
-hast** (Verwaltung → Baustellen). Ist der Rest aufgebraucht, verschwindet die
+hast** (Projekte → Baustelle → Stift). Ist der Rest aufgebraucht, verschwindet die
 Spalte.
 
 > **Planen kannst du trotzdem weiter.** Die Leiste ist eine Abkürzung, keine
@@ -463,15 +467,27 @@ Krank meldet sich jeder telefonisch. In die App trägst du es so ein:
 > genehmigen, zieht der Person keine Tage ab. Das ist bewusst so — aber es
 > heißt, dass regulärer Urlaub über den Antrag laufen muss.
 
-## 9. Baustellen
+## 9. Projekte und Baustellen
 
-**Verwaltung → Baustellen.** Aus diesem Stamm speisen sich alle Felder: das
-Auswahlfeld der Planung, die Vorschläge im Wochenbericht und in der Abnahme.
+**Reiter Projekte.** Hier steht jede laufende Baustelle mit ihren Unterlagen,
+deinen Hinweisen und einem Chat. Alle Maler sehen alle Baustellen. Aus diesem
+Stamm speisen sich auch die Auswahlfelder der Planung, des Wochenberichts und
+der Abnahme.
+
+In der **Wochenplanung** führt ein Tipp auf einen Einsatz direkt zur Baustelle
+in Projekte. Im Bearbeiten-Modus zieht die Kachel; dort geht es über das
+Ordnersymbol ins Projekt.
 
 ### Anlegen
 
-Nummer, Adresse und — wenn gewünscht — der Kunde, dann **Anlegen**. Nummer und
-Adresse sind Pflicht.
+**Neue Baustelle** oben rechts: Nummer, Adresse, auf Wunsch Kunde und
+Gesamtstunden, dann **Anlegen**. Nummer und Adresse sind Pflicht. Die Baustelle
+öffnet sich danach gleich.
+
+**Die Adresse vollständig eingeben** — Straße, Hausnummer, PLZ, Ort, z. B.
+„Wandsbeker Chaussee 12, 22089 Hamburg“. Ein Tipp auf die Adresse öffnet die
+Navigation: am Android-Handy die eingestellte Navi-App, am iPhone Apple Karten,
+am Rechner Google Maps.
 
 Die Nummer ist der Schlüssel, an dem im Wochenbericht die Adresse hängt und
 umgekehrt. Es lohnt sich, beim Schema zu bleiben (`080-7`).
@@ -480,24 +496,41 @@ Das Feld **Std. gesamt** ist freiwillig: Es sind die Stunden, die für die
 Baustelle veranschlagt sind. Leer heißt, die Baustelle taucht in der Leiste der
 Wochenplanung nicht auf.
 
-### Ändern und archivieren
-
-Der **Stift** fragt nacheinander nach Nummer und Adresse.
-
-Das **Stundenfeld** in der Zeile lässt sich direkt ändern — eintippen, woanders
-hintippen, gespeichert. Leeren nimmt die Baustelle aus der Leiste der
-Wochenplanung; sie bleibt ansonsten unverändert nutzbar.
-
 > **Was von den Stunden abgezogen wird:** alles, was in der Wochenplanung auf
 > dieser Baustelle steht — vergangene und künftige Wochen, egal ob per Block
 > oder über „+ Einsatz" eingetragen. Was die Maler später in ihren
 > Wochenberichten abgeben, ändert die Zahl nicht.
 
-Der **Archivkasten** legt die Baustelle ins Archiv — er löscht sie nicht.
+### Unterlagen, Hinweise, Chat
 
+In der Baustelle:
+
+- **Vorgaben** — Gesamtstunden und dein Hinweistext (Stift), z. B. „Schlüssel
+  beim Hausmeister“.
+- **Unterlagen** — ganz oben der Ordner **Arbeitssicherheit**, darunter, was du
+  mit **Hochladen** an diese Baustelle hängst: PDFs bleiben unverändert, Fotos
+  werden automatisch verkleinert. Hochladen und löschen kann nur das Büro.
+- **Chat** — für alles, was diese Baustelle betrifft. Löschen kann der
+  Verfasser seine Nachricht, du jede.
+
+### Arbeitssicherheit
+
+**Verwaltung → Arbeitssicherheit.** Die PDFs hier erscheinen in jedem Projekt
+im Ordner „Arbeitssicherheit“. **Ersetzen** tauscht eine Datei gegen die neue
+Fassung — sie steht dann sofort auf allen Baustellen, ohne dass du sie einzeln
+austauschen musst.
+
+### Ändern und archivieren
+
+In der Baustelle oben rechts: Der **Stift** öffnet Nummer, Adresse, Kunde und
+Gesamtstunden zum Ändern. Leere Gesamtstunden nehmen die Baustelle aus der
+Leiste der Wochenplanung; sie bleibt ansonsten unverändert nutzbar.
+
+Der **Archivkasten** legt die Baustelle ins Archiv — er löscht sie nicht.
 Archiviert heißt: Sie verschwindet aus allen Auswahlfeldern, aus der Leiste der
-Wochenplanung und aus der Liste hier oben. Ist die Baustelle abgeschlossen,
-gehört sie dorthin — so steht in der Liste nur, was gerade läuft.
+Wochenplanung und aus der Liste in Projekte. Ihre Dateien bleiben liegen; mit
+**Alle löschen** unter den Unterlagen räumst du sie vorher weg, wenn du Speicher
+sparen willst.
 
 > **Gelöscht wird nie:** An einer Baustelle hängen Berichtszeilen vergangener
 > Wochen. Würde sie verschwinden, wären alte Berichte unvollständig. Eine
@@ -506,15 +539,16 @@ gehört sie dorthin — so steht in der Liste nur, was gerade läuft.
 
 ### Das Archiv
 
-Unter der Liste liegt **Archiv** — antippen, und die archivierten Baustellen
-klappen auf. **Zurückholen** macht eine davon wieder aktiv: Sie steht sofort
-wieder in allen Auswahlfeldern, mitsamt ihren Gesamtstunden.
+Unter der Liste in Projekte liegt **Archiv** — antippen, und die archivierten
+Baustellen klappen auf. **Zurückholen** macht eine davon wieder aktiv: Sie steht
+sofort wieder in allen Auswahlfeldern, mitsamt ihren Gesamtstunden.
 
 ### Die festen Baustellen
 
-Die Zeilen `001-7` und `040-7` bis `073-7` haben **keine Knöpfe** und kein
-Stundenfeld. Ihre Nummern stecken fest im Code der Planung, im Wochenbericht
-und im Urlaubskonto — sie zu ändern oder zu archivieren würde das zerreißen.
+`001-7` und `040-7` bis `073-7` (Büroarbeit, Feiertag, Krank, Urlaub …)
+erscheinen nicht in Projekte. Ihre Nummern stecken fest im Code der Planung, im
+Wochenbericht und im Urlaubskonto — sie zu ändern oder zu archivieren würde das
+zerreißen.
 
 `001-7 Büroarbeit` ist die Nummer, auf die dein eigener Wochenbericht die
 hinterlegten Standardzeiten bucht (Kapitel 11).
