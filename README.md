@@ -52,6 +52,12 @@ Daten liegt vollständig in den Row-Level-Security-Regeln der Datenbank.
      `0017_site_total_hours.sql`. Fehlt sie, steht `001-7` weiter als normale
      Baustelle in der Liste — mit Knöpfen, Stundenfeld und als Vorauswahl im
      Einsatzformular
+   - `0019_site_files_and_chat.sql` — Reiter „Projekte“: Unterlagen (PDFs,
+     Fotos) und Hinweise des Büros je Baustelle, ein Chat je Baustelle mit
+     Live-Aktualisierung und der private Bucket `projekte` (max. 20 MB je
+     Datei, nur PDF und JPEG). Alle Maler sehen alle Baustellen; das
+     Anzeigekonto sieht nichts davon. Fehlt sie, meldet der Reiter beim
+     Öffnen einer Baustelle, dass die Migration noch aussteht
 3. Unter **Project Settings → API** die Projekt-URL und den `anon`-Key notieren.
 
 ### 2. Zugangsdaten hinterlegen
@@ -328,9 +334,9 @@ scripts/       VAPID-Schlüssel erzeugen, PDF-Designer und Anleitung bauen
 
 | Rolle | Sieht |
 |---|---|
-| `worker` (Maler) | die gesamte Einsatzplanung, genehmigte Abwesenheiten aller, eigene Anträge und eigene Berichte |
+| `worker` (Maler) | die gesamte Einsatzplanung, genehmigte Abwesenheiten aller, eigene Anträge und eigene Berichte, Unterlagen und Chat aller Baustellen |
 | `admin` (Büro) | alles, und darf Stammdaten, Planung und Urlaubsentscheidungen ändern |
-| `tv` | nur lesend, für die Anzeige im Büro |
+| `tv` | nur lesend, für die Anzeige im Büro — ohne Projekt-Unterlagen und Chats |
 
 Diese Grenzen erzwingt die Datenbank, nicht die Oberfläche.
 

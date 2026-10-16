@@ -36,6 +36,8 @@ export interface Site {
    * dasselbe sein. Vor der Migration fehlt das Feld ganz, deshalb optional.
    */
   total_hours?: number | null;
+  /** Hinweise des Büros zur Baustelle (0019). Vor der Migration fehlt das Feld. */
+  notes?: string | null;
 }
 
 /**
@@ -225,4 +227,25 @@ export interface PushSubscriptionRow {
   endpoint: string;
   p256dh: string;
   auth: string;
+}
+
+/** Eine Datei, die das Büro an eine Baustelle gehängt hat (0019). */
+export interface SiteFile {
+  id: string;
+  site_id: string;
+  kind: 'document' | 'photo';
+  name: string;
+  path: string;
+  size_bytes: number;
+  uploaded_by: string | null;
+  created_at: string;
+}
+
+/** Eine Nachricht im Chat einer Baustelle (0019). */
+export interface SiteMessage {
+  id: string;
+  site_id: string;
+  employee_id: string;
+  body: string;
+  created_at: string;
 }
