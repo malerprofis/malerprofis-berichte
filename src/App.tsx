@@ -28,7 +28,8 @@ import {
   Palmtree,
   Settings,
   Lock,
-  Receipt
+  Receipt,
+  FolderOpen
 } from 'lucide-react';
 import SignatureCanvas from 'react-signature-canvas';
 import { motion, AnimatePresence } from 'motion/react';
@@ -66,6 +67,7 @@ import { fetchHandledAssignmentIds, markAssignments } from './lib/planning.ts';
 import { flushAbnahmeQueue, pendingAbnahmeCount, queueAbnahme, shrinkPhoto } from './lib/abnahme.ts';
 import DefaultHours from './features/admin/DefaultHours.tsx';
 import ExpensesView from './features/expenses/ExpensesView.tsx';
+import ProjectsView from './features/projects/ProjectsView.tsx';
 import { flushReceiptQueue, pendingReceiptCount } from './lib/expense-queue.ts';
 import { buildPrefill } from './lib/prefill.ts';
 import type { Employee, Holiday, LeaveRequest, Site } from './lib/database.types.ts';
@@ -223,7 +225,7 @@ function ReportEntryEditor({
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'wochenbericht' | 'planung' | 'abnahme' | 'leave' | 'auslagen' | 'admin' | 'settings'>('planung');
+  const [activeTab, setActiveTab] = useState<'wochenbericht' | 'planung' | 'projekte' | 'abnahme' | 'leave' | 'auslagen' | 'admin' | 'settings'>('planung');
   const [selectedWeek, setSelectedWeek] = useState(startOfISOWeek(new Date()));
   const { employee: currentUser, signOut } = useAuth();
   const isAdmin = currentUser?.role === 'admin';
@@ -861,6 +863,7 @@ export default function App() {
 
   const navItems = [
     { id: 'planung', label: 'Wochenplanung', icon: Calendar },
+    { id: 'projekte', label: 'Projekte', icon: FolderOpen },
     { id: 'wochenbericht', label: 'Wochenberichte', icon: Clock },
     { id: 'abnahme', label: 'Abnahme', icon: CheckSquare },
     { id: 'leave', label: 'Urlaub', icon: Palmtree },
@@ -1714,6 +1717,22 @@ export default function App() {
                 exit={{ opacity: 0, y: -10 }}
               >
                 <ExpensesView currentUser={currentUser} syncTick={expenseSyncTick} />
+              </motion.div>
+            )}
+
+            {activeTab === 'projekte' && currentUser && (
+              <motion.div
+                key="projekte"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <ProjectsView
+                  sites={sites}
+                  employees={employees}
+                  currentUser={currentUser}
+                  onSitesChanged={reloadData}
+                />
               </motion.div>
             )}
 
