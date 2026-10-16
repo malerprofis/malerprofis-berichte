@@ -15,6 +15,7 @@ import {
   StickyNote,
   Maximize2,
   X,
+  FolderOpen,
 } from 'lucide-react';
 import {
   copyTradeRowsToWeek,
@@ -91,11 +92,14 @@ export default function WeekGrid({
   sites,
   canEdit = false,
   currentEmployeeId,
+  onOpenSite,
 }: {
   employees: Employee[];
   sites: Site[];
   canEdit?: boolean;
   currentEmployeeId?: string;
+  /** Öffnet die Baustelle im Reiter „Projekte“. */
+  onOpenSite?: (siteId: string) => void;
 }) {
   const [weekStart, setWeekStart] = useState(() => {
     const now = new Date();
@@ -175,6 +179,17 @@ export default function WeekGrid({
   const cellRects = useRef(new Map<string, DOMRect>());
 
   const readOnly = !canEdit || !editMode;
+
+  /**
+   * Nur echte Baustellen haben ein Projekt. Urlaub, Krank, Büroarbeit usw.
+   * bleiben stumm — und archivierte Baustellen stehen nicht in `sites`.
+   */
+  const openerFor = (siteId: string | null | undefined) => {
+    if (!onOpenSite || !siteId) return undefined;
+    const site = sites.find((s) => s.id === siteId);
+    if (!site || site.is_absence_code) return undefined;
+    return () => onOpenSite(siteId);
+  };
   const weekEnd = addDays(weekStart, DAY_COUNT - 1);
 
   /**
@@ -888,6 +903,7 @@ export default function WeekGrid({
                             onDelete={() => remove(a)}
                             onDuplicate={() => duplicate(a)}
                             onEdit={() => setEditAssignmentId(a.id)}
+                            onOpen={openerFor(a.site_id)}
                             onNote={(note) =>
                               run(async () => {
                                 await updateAssignmentNote(a.id, note);
@@ -999,6 +1015,7 @@ export default function WeekGrid({
                           entry={entry}
                           readOnly={readOnly}
                           onEdit={() => setEditTradeId(entry.id)}
+                          onOpen={openerFor(entry.site_id)}
                           onDragStart={measureTradeCells}
                           onDragMove={(x, y) => {
                             const target = tradeCellAt(x, y);
@@ -1242,6 +1259,7 @@ function AssignmentTile({
   onDuplicate,
   onEdit,
   onNote,
+  onOpen,
 }: {
   assignment: AssignmentRow;
   color: ReturnType<typeof colorOf>;
@@ -1254,6 +1272,7 @@ function AssignmentTile({
   onDuplicate: () => void;
   onEdit: () => void;
   onNote: (note: string | null) => void;
+  onOpen?: () => void;
 }) {
   /** `null` = nicht in Bearbeitung; ein String ist der laufende Entwurf. */
   const [draft, setDraft] = useState<string | null>(null);
@@ -1287,6 +1306,20 @@ function AssignmentTile({
   );
 
   if (readOnly) {
+    // Ohne Bearbeiten ist die ganze Kachel der Weg ins Projekt.
+    if (onOpen) {
+      return (
+        <button
+          onClick={onOpen}
+          title="Projekt öffnen"
+          className="block w-full text-left rounded-xl px-2 py-1.5 text-xs border cursor-pointer hover:brightness-95"
+          style={{ backgroundColor: color.light.background, borderColor: color.light.border }}
+        >
+          {body}
+          {noteLine}
+        </button>
+      );
+    }
     return (
       <div
         className="rounded-xl px-2 py-1.5 text-xs border"
@@ -1350,6 +1383,18 @@ function AssignmentTile({
       )}
 
       <div className="flex items-center gap-1 mt-1">
+        {/* Im Bearbeiten zieht die Kachel; ins Projekt geht es über diesen Knopf. */}
+        {onOpen && (
+          <button
+            onPointerDownCapture={(e) => e.stopPropagation()}
+            onClick={onOpen}
+            className="p-1 rounded-md text-[#141414]/40 hover:text-brand-accent1 hover:bg-white/70 cursor-pointer"
+            title="Projekt öffnen"
+            aria-label="Projekt öffnen"
+          >
+            <FolderOpen size={12} />
+          </button>
+        )}
         <button
           onPointerDownCapture={(e) => e.stopPropagation()}
           onClick={onEdit}
@@ -1408,6 +1453,7 @@ function TradeTile({
   onDragEnd,
   onDelete,
   onDuplicate,
+  onOpen,
 }: {
   entry: TradeEntryRow;
   readOnly: boolean;
@@ -1417,6 +1463,7 @@ function TradeTile({
   onDragEnd: (x: number, y: number) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  onOpen?: () => void;
 }) {
   const body = (
     <>
@@ -1427,6 +1474,17 @@ function TradeTile({
   );
 
   if (readOnly) {
+    if (onOpen) {
+      return (
+        <button
+          onClick={onOpen}
+          title="Projekt öffnen"
+          className="block w-full text-left rounded-xl px-2 py-1.5 text-xs border border-gray-200 bg-gray-100 cursor-pointer hover:bg-gray-200"
+        >
+          {body}
+        </button>
+      );
+    }
     return (
       <div className="rounded-xl px-2 py-1.5 text-xs border border-gray-200 bg-gray-100">
         {body}
@@ -1449,6 +1507,17 @@ function TradeTile({
       {body}
 
       <div className="flex items-center gap-1 mt-1">
+        {onOpen && (
+          <button
+            onPointerDownCapture={(e) => e.stopPropagation()}
+            onClick={onOpen}
+            className="p-1 rounded-md text-[#141414]/40 hover:text-[#141414] hover:bg-white/70 cursor-pointer"
+            title="Projekt öffnen"
+            aria-label="Projekt öffnen"
+          >
+            <FolderOpen size={12} />
+          </button>
+        )}
         <button
           onPointerDownCapture={(e) => e.stopPropagation()}
           onClick={onEdit}

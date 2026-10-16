@@ -123,25 +123,6 @@ export async function fetchPlannedHoursPerSite(): Promise<Map<string, number>> {
   );
 }
 
-const MISSING_SITE_HOURS =
-  'Die Gesamtstunden der Baustellen sind in der Datenbank noch nicht angelegt. Bitte einmalig ' +
-  'supabase/migrations/0017_site_total_hours.sql im Supabase-SQL-Editor ausführen.';
-
-/**
- * Veranschlagte Gesamtstunden einer Baustelle setzen. `null` löscht die
- * Vorgabe — die Baustelle verschwindet dann aus der Leiste der Wochenplanung.
- */
-export async function setSiteTotalHours(id: string, hours: number | null): Promise<void> {
-  const { error } = await supabase.from('sites').update({ total_hours: hours }).eq('id', id);
-  if (error) {
-    throw new Error(
-      isMissingColumn(error, 'total_hours')
-        ? MISSING_SITE_HOURS
-        : `Gesamtstunden konnten nicht gespeichert werden: ${error.message}`,
-    );
-  }
-}
-
 export async function fetchHolidays(from: string, to: string): Promise<Holiday[]> {
   return unwrap<Holiday[]>(
     await supabase.from('holidays').select('*').gte('date', from).lte('date', to).order('date'),
@@ -260,18 +241,6 @@ function isMissingTable(error: { code?: string; message: string }, table: string
     error.code === '42P01' || // Postgres: relation does not exist
     error.code === 'PGRST205' || // PostgREST: nicht im Schema-Cache
     error.message.includes(table)
-  );
-}
-
-/**
- * Dasselbe für eine fehlende Spalte. Betrifft nur das Schreiben — beim Lesen
- * mit select('*') fällt eine fehlende Spalte gar nicht erst auf.
- */
-function isMissingColumn(error: { code?: string; message: string }, column: string): boolean {
-  return (
-    error.code === '42703' || // Postgres: column does not exist
-    error.code === 'PGRST204' || // PostgREST: nicht im Schema-Cache
-    error.message.includes(column)
   );
 }
 

@@ -90,3 +90,56 @@ export function mergeMessage<T extends { id: string; created_at: string }>(list:
   if (list.some((m) => m.id === next.id)) return list;
   return [...list, next].sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
+
+// ---------------------------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------------------------
+
+export type Platform = 'ios' | 'android' | 'desktop';
+
+/** Grobe Einordnung des Geräts — reicht, um die passende Karten-App zu wählen. */
+export function detectPlatform(userAgent: string, maxTouchPoints = 0): Platform {
+  if (/iPhone|iPad|iPod/i.test(userAgent)) return 'ios';
+  // iPadOS meldet sich als Mac, hat aber einen Touchscreen.
+  if (/Macintosh/i.test(userAgent) && maxTouchPoints > 1) return 'ios';
+  if (/Android/i.test(userAgent)) return 'android';
+  return 'desktop';
+}
+
+/**
+ * Link, der die Adresse in der Navigations-App des Geräts öffnet.
+ *
+ * - Android: `geo:` — das System fragt, welche App (Google Maps, Waze, …)
+ *   oder nimmt die voreingestellte.
+ * - iPhone/iPad: Apple Karten. Wer Google Maps nutzt, wählt dort „Öffnen in".
+ * - Rechner: Google Maps im Browser.
+ */
+export function navigationUrl(address: string, platform: Platform): string {
+  const query = encodeURIComponent(address.trim());
+  switch (platform) {
+    case 'android':
+      return `geo:0,0?q=${query}`;
+    case 'ios':
+      return `https://maps.apple.com/?q=${query}`;
+    default:
+      return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Stammdaten
+// ---------------------------------------------------------------------------
+
+/**
+ * Stundenzahl aus einem Eingabefeld. Leer heißt null — die Baustelle taucht
+ * dann nicht in der Leiste der Wochenplanung auf. Komma wird zu Punkt: Wer
+ * 8,5 tippt, meint 8.5.
+ */
+export function parseHours(raw: string): number | null | 'ungültig' {
+  const text = raw.trim().replace(',', '.');
+  if (!text) return null;
+  const value = Number(text);
+  return Number.isFinite(value) && value > 0 ? value : 'ungültig';
+}
+
+export const INVALID_HOURS = 'Bitte eine Stundenzahl größer als 0 angeben oder das Feld leeren.';

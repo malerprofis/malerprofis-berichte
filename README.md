@@ -58,6 +58,10 @@ Daten liegt vollständig in den Row-Level-Security-Regeln der Datenbank.
      Datei, nur PDF und JPEG). Alle Maler sehen alle Baustellen; das
      Anzeigekonto sieht nichts davon. Fehlt sie, meldet der Reiter beim
      Öffnen einer Baustelle, dass die Migration noch aussteht
+   - `0020_safety_files.sql` — Ordner „Arbeitssicherheit“: PDFs, die das Büro
+     unter Verwaltung pflegt und die in jedem Projekt ganz oben stehen. Braucht
+     `0019_site_files_and_chat.sql`. Fehlt sie, bleibt der Ordner leer und die
+     Verwaltung meldet, dass die Migration noch aussteht
 3. Unter **Project Settings → API** die Projekt-URL und den `anon`-Key notieren.
 
 ### 2. Zugangsdaten hinterlegen

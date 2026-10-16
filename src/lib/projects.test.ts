@@ -6,7 +6,10 @@ import {
   fileKind,
   formatBytes,
   matchesSearch,
+  detectPlatform,
   mergeMessage,
+  navigationUrl,
+  parseHours,
   projectSites,
   siteFilePath,
   storedFileName,
@@ -73,6 +76,31 @@ const a = { id: 'a', created_at: '2026-10-16T10:00:00Z' };
 const b = { id: 'b', created_at: '2026-10-16T10:05:00Z' };
 check('eigene Nachricht nicht doppelt', mergeMessage([a, b], b).length, 2);
 check('verspätete Nachricht sortiert ein', mergeMessage([b], a).map((m) => m.id), ['a', 'b']);
+
+// --- Navigation -------------------------------------------------------------
+
+const iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)';
+const ipad = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)';
+const android = 'Mozilla/5.0 (Linux; Android 14; Pixel 8)';
+check('iPhone', detectPlatform(iphone), 'ios');
+check('iPad meldet sich als Mac', detectPlatform(ipad, 5), 'ios');
+check('Mac ohne Touch', detectPlatform(ipad, 0), 'desktop');
+check('Android', detectPlatform(android), 'android');
+
+const adresse = 'Wandsbeker Chaussee 12, 22089 Hamburg';
+check('Android öffnet geo:', navigationUrl(adresse, 'android'),
+  'geo:0,0?q=Wandsbeker%20Chaussee%2012%2C%2022089%20Hamburg');
+check('iPhone öffnet Apple Karten', navigationUrl(adresse, 'ios'),
+  'https://maps.apple.com/?q=Wandsbeker%20Chaussee%2012%2C%2022089%20Hamburg');
+check('Rechner öffnet Google Maps', navigationUrl(' Hauptstr. 1 ', 'desktop'),
+  'https://www.google.com/maps/search/?api=1&query=Hauptstr.%201');
+
+// --- Stunden -----------------------------------------------------------------
+
+check('Komma', parseHours('8,5'), 8.5);
+check('leer', parseHours('  '), null);
+check('null ist ungültig', parseHours('0'), 'ungültig');
+check('Text ist ungültig', parseHours('abc'), 'ungültig');
 
 if (failed > 0) {
   console.log(`\n${failed} Prüfung(en) fehlgeschlagen.`);
