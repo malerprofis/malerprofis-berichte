@@ -70,6 +70,7 @@ import { flushAbnahmeQueue, pendingAbnahmeCount, queueAbnahme, shrinkPhoto } fro
 import DefaultHours from './features/admin/DefaultHours.tsx';
 import ExpensesView from './features/expenses/ExpensesView.tsx';
 import ProjectsView from './features/projects/ProjectsView.tsx';
+import { useUnreadChats } from './features/projects/useUnreadChats.ts';
 import { flushReceiptQueue, pendingReceiptCount } from './lib/expense-queue.ts';
 import { buildPrefill } from './lib/prefill.ts';
 import type { Employee, Holiday, LeaveRequest, Site } from './lib/database.types.ts';
@@ -226,6 +227,22 @@ function ReportEntryEditor({
   );
 }
 
+/** Rote Zahl für ungelesene Chat-Nachrichten. Bei 0 unsichtbar. */
+function UnreadBadge({ count, className }: { count: number; className?: string }) {
+  if (count <= 0) return null;
+  return (
+    <span
+      className={cn(
+        'min-w-5 h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[11px] font-bold',
+        className,
+      )}
+      aria-label={`${count} neue Nachrichten`}
+    >
+      {count > 99 ? '99+' : count}
+    </span>
+  );
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<'wochenbericht' | 'planung' | 'projekte' | 'abnahme' | 'leave' | 'auslagen' | 'admin' | 'settings'>('planung');
   /** Die im Reiter „Projekte“ geöffnete Baustelle. Hier oben, damit die Wochenplanung dorthin springen kann. */
@@ -233,6 +250,34 @@ export default function App() {
   const [selectedWeek, setSelectedWeek] = useState(startOfISOWeek(new Date()));
   const { employee: currentUser, signOut } = useAuth();
   const isAdmin = currentUser?.role === 'admin';
+  const unreadChats = useUnreadChats(
+    currentUser?.id,
+    activeTab === 'projekte' ? projectSiteId : null,
+  );
+
+  // Ein Tipp auf die Push-Nachricht zu einer Chat-Nachricht öffnet die
+  // Baustelle: als Adresse ?baustelle=<id>, wenn die App neu startet, oder
+  // als Botschaft des Service Workers, wenn sie schon offen war.
+  useEffect(() => {
+    const openSite = (siteId: string) => {
+      setProjectSiteId(siteId);
+      setActiveTab('projekte');
+    };
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get('baustelle');
+    if (fromUrl) {
+      openSite(fromUrl);
+      params.delete('baustelle');
+      const rest = params.toString();
+      window.history.replaceState(null, '', window.location.pathname + (rest ? `?${rest}` : '') + window.location.hash);
+    }
+    const onMessage = (event: MessageEvent) => {
+      const data = event.data as { type?: string; siteId?: string } | null;
+      if (data?.type === 'open-site' && data.siteId) openSite(data.siteId);
+    };
+    navigator.serviceWorker?.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker?.removeEventListener('message', onMessage);
+  }, []);
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
@@ -903,6 +948,7 @@ export default function App() {
             >
               <item.icon size={20} />
               <span className="text-sm">{item.label}</span>
+              {item.id === 'projekte' && <UnreadBadge count={unreadChats.total} className="ml-auto" />}
             </button>
           ))}
         </div>
@@ -918,11 +964,16 @@ export default function App() {
           <div className="relative">
             <button
               onClick={() => setIsMobileMenuOpen((open) => !open)}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/70 border border-[#141414]/10 cursor-pointer"
+              className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-white/70 border border-[#141414]/10 cursor-pointer"
               aria-label="Menü"
               aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+              {/* Am Handy steckt „Projekte" im Menü — der Punkt verrät, dass
+                  dort etwas Neues wartet. */}
+              {!isMobileMenuOpen && unreadChats.total > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-white" aria-label="Neue Nachrichten" />
+              )}
             </button>
 
             {isMobileMenuOpen && (
@@ -951,6 +1002,7 @@ export default function App() {
                     >
                       <item.icon size={18} />
                       {item.label}
+                      {item.id === 'projekte' && <UnreadBadge count={unreadChats.total} className="ml-auto" />}
                     </button>
                   ))}
                 </div>
@@ -1742,6 +1794,7 @@ export default function App() {
                   currentUser={currentUser}
                   openSiteId={projectSiteId}
                   onOpenSite={setProjectSiteId}
+                  unreadCounts={unreadChats.counts}
                   onSitesChanged={reloadData}
                 />
               </motion.div>

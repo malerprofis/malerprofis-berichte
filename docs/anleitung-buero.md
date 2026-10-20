@@ -512,13 +512,18 @@ In der Baustelle:
   mit **Hochladen** an diese Baustelle hängst: PDFs bleiben unverändert, Fotos
   werden automatisch verkleinert. Hochladen und löschen kann nur das Büro.
 - **Chat** — für alles, was diese Baustelle betrifft. Löschen kann der
-  Verfasser seine Nachricht, du jede. Neue Nachrichten lösen **noch keine
-  Benachrichtigung** aus, und Fotos lassen sich im Chat noch nicht schicken.
+  Verfasser seine Nachricht, du jede. Fotos lassen sich im Chat noch nicht
+  schicken.
 
 > **Was die Maler hier sehen:** Vorgaben, Unterlagen, den Ordner
 > Arbeitssicherheit und den Chat — nur ohne Stift, Hochladen, Löschen und
 > Archivkasten. Was du in die Vorgaben schreibst, ist also für die ganze
 > Mannschaft zu lesen.
+
+Neue Nachrichten erkennst du ohne Öffnen: Eine **rote Zahl** steht an der
+Baustelle in der Liste und am Reiter **Projekte** (am Handy ein roter Punkt am
+Menü). Sobald du die Baustelle öffnest, gilt der Chat als gelesen. Dazu kommt
+eine Push-Nachricht — siehe Abschnitt 13.
 
 ### Arbeitssicherheit
 
@@ -733,10 +738,11 @@ reichen:
   einmal einschalten.
 - Die **Schalter darunter** gelten für dich auf **allen deinen Geräten**.
 
-Für ein Büro-Konto gibt es zwei Arten:
+Für ein Büro-Konto gibt es drei Arten:
 
 | Art | Wann sie kommt |
 | --- | --- |
+| Chat-Nachricht | Wenn jemand im Chat einer Baustelle schreibt. Ein Tipp öffnet die Baustelle. |
 | Neuer Urlaubsantrag | Wenn ein Mitarbeiter Urlaub beantragt. |
 | Urlaub entschieden | Wenn über deinen eigenen Antrag entschieden wurde. |
 

@@ -232,9 +232,13 @@ Neue Nachrichten erscheinen von selbst, du musst nichts neu laden.
 - **Lesen und schreiben** kann jeder aus der Mannschaft und das Büro.
 - **Löschen** kannst du deine eigenen Nachrichten. Das Büro kann jede löschen.
 
-> **Noch nicht möglich:** Fotos in den Chat schicken und eine
-> Benachrichtigung bei neuen Nachrichten. Schau also selbst rein, wenn du auf
-> der Baustelle bist.
+Neue Nachrichten erkennst du ohne Öffnen: Eine **rote Zahl** steht an der
+Baustelle in der Liste und am Reiter **Projekte** (am Handy ein roter Punkt am
+Menü). Sobald du die Baustelle öffnest, gilt der Chat als gelesen. Dazu kommt
+eine Push-Nachricht, wenn du Benachrichtigungen eingeschaltet hast (siehe
+Einstellungen).
+
+> **Noch nicht möglich:** Fotos in den Chat schicken.
 
 > **Wird eine Baustelle abgeschlossen**, sichert das Büro den Chat als PDF
 > und räumt die Baustelle danach leer. Sie verschwindet dann aus der Liste.
@@ -578,11 +582,12 @@ Es gibt zwei Ebenen, die verschieden weit reichen:
 - Die **Schalter darunter** gelten für **dich auf allen deinen Geräten**. Wer
   die Planänderung am Handy nicht will, will sie auch am Tablet nicht.
 
-Für dich gibt es zwei Arten:
+Für dich gibt es drei Arten:
 
 | Art | Wann sie kommt |
 | --- | --- |
 | Planänderung | Wenn das Büro einen deiner Einsätze anlegt, verschiebt oder streicht. |
+| Chat-Nachricht | Wenn jemand im Chat einer Baustelle schreibt. Ein Tipp öffnet die Baustelle. Unter **Projekte** zeigt eine rote Zahl, wo Ungelesenes wartet. |
 | Urlaub entschieden | Wenn dein Urlaubsantrag genehmigt oder abgelehnt wurde. |
 
 Die Erlaubnis fragt das Gerät erst beim Einschalten ab — nicht beim ersten

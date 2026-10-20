@@ -126,7 +126,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
  * Tabelle push_preferences — kommt eine Art dazu, müssen alle drei Stellen
  * angefasst werden.
  */
-export type PushKind = 'leave_submitted' | 'leave_decided' | 'plan_changed';
+export type PushKind = 'leave_submitted' | 'leave_decided' | 'plan_changed' | 'chat_message';
 
 /** Beschreibung je Art, dazu die Rolle, für die sie überhaupt vorkommt. */
 export const PUSH_KINDS: {
@@ -142,6 +142,12 @@ export const PUSH_KINDS: {
     description: 'Wenn das Büro einen deiner Einsätze anlegt, verschiebt oder streicht.',
     // Im Planungsraster stehen nur Maler; ein Büro-Konto bekäme das nie.
     onlyRole: 'worker',
+  },
+  {
+    kind: 'chat_message',
+    title: 'Chat-Nachricht',
+    description: 'Wenn jemand im Chat einer Baustelle schreibt.',
+    onlyRole: null,
   },
   {
     kind: 'leave_decided',
