@@ -8,7 +8,7 @@ quelle: docs/anleitung-maler.md
 pdf: docs/Anleitung-Maler.pdf
 deckblatt_oben: Anleitung
 deckblatt_unten: für Maler
-einleitung: Wochenplanung, Wochenberichte, Abnahmeprotokolle, Urlaub und Auslagen — alles, was du in der App der Malerprofis Uderstadt brauchst.
+einleitung: Wochenplanung, Projekte mit Unterlagen und Chat, Wochenberichte, Abnahmeprotokolle, Urlaub und Auslagen — alles, was du in der App der Malerprofis Uderstadt brauchst.
 hinweis_fuer_ki: >
   Diese Datei ist die einzige Quelle der Anleitung. Das PDF wird daraus mit
   `npm run anleitung` erzeugt und nie von Hand bearbeitet. Jedes Kapitel (##)
@@ -22,12 +22,12 @@ hinweis_fuer_ki: >
 ## 1. Die App auf einen Blick
 
 Die App ersetzt den Zettel auf dem Armaturenbrett: Sie zeigt dir, wo du diese
-Woche eingeteilt bist, du schreibst deinen Wochenbericht hinein, machst
-Abnahmen beim Kunden, beantragst Urlaub und reichst deine Auslagen ein. Alles,
+Woche eingeteilt bist, wo die Pläne und Hinweise zu deiner Baustelle liegen,
+du schreibst deinen Wochenbericht hinein, machst Abnahmen beim Kunden, beantragst Urlaub und reichst deine Auslagen ein. Alles,
 was du eingibst, landet direkt im Büro — es gibt keinen Versand per Mail und
 keine Papiere, die verloren gehen können.
 
-### Deine sechs Reiter
+### Deine sieben Reiter
 
 Am großen Bildschirm stehen sie links, am Handy hinter dem Menü-Knopf oben
 rechts.
@@ -35,6 +35,7 @@ rechts.
 | Reiter | Wofür |
 | --- | --- |
 | Wochenplanung | Wer ist diese Woche wo. Du liest nur mit, geplant wird im Büro. |
+| Projekte | Jede Baustelle mit Adresse, Hinweisen, Unterlagen und einem Chat. |
 | Wochenberichte | Deine Arbeitszeit, Tag für Tag. Am Ende der Woche unterschreiben und abgeben. |
 | Abnahme | Abnahmeprotokoll beim Kunden, mit Fotos und zwei Unterschriften. |
 | Urlaub | Resturlaub sehen und Urlaub beantragen. |
@@ -52,7 +53,9 @@ tippst, solange du es nicht gespeichert oder abgegeben hast.
 
 Umgekehrt siehst du die Einsatzplanung aller Kollegen und ihre genehmigten
 Abwesenheiten — das muss so sein, damit jeder weiß, wer auf welcher Baustelle
-ist. Fremde Wochenberichte, Unterschriften und Belege bleiben dir verborgen.
+ist. Auch alle Baustellen in **Projekte** und ihre Chats sieht jeder aus der
+Mannschaft. Fremde Wochenberichte, Unterschriften und Belege bleiben dir
+verborgen.
 
 > **Gut zu wissen:** Diese Grenzen zieht die Datenbank, nicht die Oberfläche.
 > Auch wer die App austrickst, kommt an nichts heran, was ihn nichts angeht.
@@ -61,7 +64,7 @@ ist. Fremde Wochenberichte, Unterschriften und Belege bleiben dir verborgen.
 
 ### Zum ersten Mal anmelden
 
-1. Die Adresse der App im Browser öffnen — du bekommst sie vom Büro.
+1. Die App im Browser öffnen: **app.malerprofis.hamburg**
 2. **E-Mail** und **Passwort** eingeben, die dir das Büro gegeben hat.
 3. Auf **Anmelden** tippen.
 
@@ -114,6 +117,8 @@ erscheint nur, wenn dort auch etwas steht.
 - Eine Kachel zeigt **Baustellennummer, Adresse und Uhrzeiten**. Steht eine
   Notiz vom Büro dabei („Kunde ab 10 Uhr da"), wird sie vollständig angezeigt
   und nie abgeschnitten.
+- **Ein Tipp auf eine Kachel öffnet die Baustelle** im Reiter Projekte — mit
+  Adresse, Hinweisen, Plänen und Chat (siehe Kapitel 4).
 - Ganz oben läuft die Zeile **Hinweise** — sie gilt dem ganzen Tag, nicht einer
   einzelnen Person.
 - Unter den Mitarbeitern stehen die **Fremdgewerke** (zum Beispiel Hebebühne
@@ -154,9 +159,87 @@ Woche.
 
 Kommt eine Planänderung, prüfe kurz deine Woche. Schau danach auch in den
 Wochenbericht: Neue Einsätze werden dort automatisch ergänzt, aber nur an
-Tagen, an denen du noch nichts eingetragen hast (siehe Kapitel 4).
+Tagen, an denen du noch nichts eingetragen hast (siehe Kapitel 5).
 
-## 4. Wochenberichte
+## 4. Projekte
+
+Hier steht jede laufende Baustelle mit allem, was du vor Ort brauchst: die
+Adresse zum Hinfahren, die Hinweise des Büros, Pläne und Fotos und einen Chat.
+**Jeder aus der Mannschaft sieht jede Baustelle** — du musst für nichts extra
+freigeschaltet werden.
+
+### Eine Baustelle finden
+
+1. Den Reiter **Projekte** öffnen.
+2. Oben ins Suchfeld **Nummer, Adresse oder Kunde** tippen.
+3. Die Baustelle antippen.
+
+Schneller geht es aus der **Wochenplanung**: Ein Tipp auf deinen Einsatz öffnet
+die Baustelle direkt. Mit dem **Pfeil oben links** kommst du zurück zur Liste.
+
+Eine kleine **Büroklammer** mit Zahl in der Liste heißt: Das Büro hat an diese
+Baustelle schon Unterlagen gehängt.
+
+### Hinfahren
+
+**Tipp auf die Adresse oben** — die Navigation startet: am Android-Handy deine
+Navi-App, am iPhone Apple Karten, am Rechner Google Maps. Abtippen entfällt.
+
+### Vorgaben: was das Büro dir mitgibt
+
+Unter **Vorgaben** stehen die Hinweise des Büros zu dieser Baustelle, zum
+Beispiel „Schlüssel beim Hausmeister" oder „Treppenhaus bis Freitag fertig".
+Hat das Büro Gesamtstunden hinterlegt, siehst du dort auch, wie viele Stunden
+veranschlagt und wie viele schon verplant sind.
+
+> **Vor dem ersten Tag auf einer neuen Baustelle:** Vorgaben lesen. Was dort
+> steht, erspart dir den Anruf im Büro.
+
+### Unterlagen
+
+Unter **Unterlagen** liegen die Dateien, die das Büro an die Baustelle gehängt
+hat:
+
+- **PDFs** (Pläne, Leistungsverzeichnis, Farbtöne) — antippen öffnet sie.
+- **Fotos** — antippen zeigt sie groß.
+
+Hochladen und löschen kann **nur das Büro**. Fehlt dir ein Plan, schreib es in
+den Chat.
+
+### Der Ordner Arbeitssicherheit
+
+**Ganz oben in den Unterlagen jeder Baustelle** steht der Ordner
+**Arbeitssicherheit** — überall derselbe. Darin liegen Betriebsanweisungen,
+Sicherheitsdatenblätter und Ähnliches, teils in Unterordnern. Antippen klappt
+ihn auf.
+
+Das Büro pflegt diese Dateien an einer Stelle. Eine neue Fassung steht deshalb
+sofort auf allen Baustellen — du hast immer die aktuelle.
+
+### Der Chat
+
+Jede Baustelle hat ihren eigenen Chat. Hier gehört alles hinein, was **diese
+Baustelle** betrifft: „Farbe reicht nicht", „Kunde will die Tür doch weiß",
+„Gerüst steht".
+
+1. Am Handy oben auf **Chat** tippen (daneben steht **Unterlagen**). Am großen
+   Bildschirm steht der Chat gleich rechts daneben.
+2. Unten ins Feld **Nachricht** tippen.
+3. Auf den **Pfeil** tippen. Am Rechner schickt auch **Enter** ab.
+
+Neue Nachrichten erscheinen von selbst, du musst nichts neu laden.
+
+- **Lesen und schreiben** kann jeder aus der Mannschaft und das Büro.
+- **Löschen** kannst du deine eigenen Nachrichten. Das Büro kann jede löschen.
+
+> **Noch nicht möglich:** Fotos in den Chat schicken und eine
+> Benachrichtigung bei neuen Nachrichten. Schau also selbst rein, wenn du auf
+> der Baustelle bist.
+
+> **Wird eine Baustelle abgeschlossen**, sichert das Büro den Chat als PDF
+> und räumt die Baustelle danach leer. Sie verschwindet dann aus der Liste.
+
+## 5. Wochenberichte
 
 Das ist der Reiter, in dem du am meisten arbeitest. Oben stehen die Woche und
 die **Gesamtwochenstunden**, darunter eine Karte je Wochentag.
@@ -274,7 +357,7 @@ Jede Änderung wird sofort auf dem Gerät gesichert. Auch wenn der Akku leer ist
 die Seite neu lädt oder das Netz wegbricht — die Woche steht beim nächsten
 Öffnen wieder da.
 
-## 5. Abnahmeprotokoll
+## 6. Abnahmeprotokoll
 
 Das Abnahmeprotokoll machst du beim Kunden, direkt vor Ort. Am Ende bekommst du
 ein PDF auf dein Gerät, und dieselbe Datei geht ans Büro.
@@ -346,7 +429,7 @@ Oben im Reiter steht dann, wie viele Abnahmen noch auf die Übertragung warten.
 Diese Zahl verschwindet von selbst, sobald du wieder Empfang hast — du musst
 nichts weiter tun.
 
-## 6. Urlaub
+## 7. Urlaub
 
 ### Dein Urlaubskonto
 
@@ -399,7 +482,7 @@ Das Büro trägt die Krankmeldung in der Wochenplanung unter dem Code `050-7`
 ein. In deiner Liste hier taucht sie dann als „Krankmeldung" auf — dein
 Urlaubskonto rührt sie nicht an.
 
-## 7. Auslagen
+## 8. Auslagen
 
 Alles, was du für die Firma auslegst, reichst du hier ein: Tanken, Parken,
 Werkzeug, Material, Bewirtung. Das Büro rechnet monatlich ab und erstattet dir
@@ -467,7 +550,7 @@ automatisch raus, sobald wieder Netz da ist. Er steht so lange mit einem
 Wolken-Symbol in der Liste und zählt bei der offenen Summe schon mit. Verwerfen
 kannst du ihn dort ebenfalls — dann wird er nie übertragen.
 
-## 8. Einstellungen
+## 9. Einstellungen
 
 ### Berichtshistorie
 
@@ -511,7 +594,7 @@ Einstellungen des Geräts wieder erlauben; die App zeigt dir das dann an.
 Ganz unten. Danach fragt die App wieder nach E-Mail und Passwort. Im Alltag
 brauchst du das nicht — die Anmeldung hält monatelang.
 
-## 9. Wenn etwas nicht klappt
+## 10. Wenn etwas nicht klappt
 
 ### Meldungen, die du sehen kannst
 
@@ -539,13 +622,14 @@ brauchst du das nicht — die Anmeldung hält monatelang.
 > **Deine Eingaben gehen dabei nicht verloren.** Der Wochenbericht liegt auf
 > dem Gerät, Abnahmen und Belege warten im Puffer.
 
-## 10. Spickzettel
+## 11. Spickzettel
 
 ### Der Wochenrhythmus
 
 | Wann | Was |
 | --- | --- |
 | Morgens | Wochenplanung öffnen: Wo bin ich heute, gibt es Hinweise? |
+| Neue Baustelle | Einsatz antippen: Vorgaben, Pläne und Chat lesen, Adresse antippen zum Hinfahren. |
 | Nach Feierabend | Wochenbericht: Tätigkeitsbeschreibung zum Tag ergänzen. |
 | Beim Kunden | Abnahme machen, zwei Unterschriften, fertig. |
 | Wenn du etwas auslegst | Bon sofort fotografieren und als Beleg erfassen. |
@@ -561,5 +645,6 @@ brauchst du das nicht — die Anmeldung hält monatelang.
 - Ein **abgegebener Bericht** ist gesperrt — ab dann hilft nur das Büro.
 - Ein **gelöschter Planeintrag** kommt nie wieder.
 - Ein Beleg braucht **mindestens ein Foto**.
+- Der **Baustellen-Chat** ist für alle sichtbar — schreib dort nichts Privates.
 - **Krank** meldest du telefonisch, nicht in der App.
 - **Ohne Netz** geht nichts verloren.
