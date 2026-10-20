@@ -10,6 +10,9 @@
  *   public.plan_change_events
  *     INSERT -> eine Sammelmeldung je Woche an die betroffenen Maler
  *
+ *   public.site_messages
+ *     INSERT -> Chat-Nachricht an die ganze Mannschaft außer dem Verfasser
+ *
  * Der Versand muss serverseitig laufen, weil die Nachricht mit dem privaten
  * VAPID-Schlüssel signiert wird. Im Browser wäre dieser Schlüssel für jeden
  * einsehbar.
@@ -29,7 +32,7 @@ import webpush from 'npm:web-push@3.6.7';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 /** Dieselben Bezeichner wie in src/lib/push.ts und in push_preferences. */
-type PushKind = 'leave_submitted' | 'leave_decided' | 'plan_changed';
+type PushKind = 'leave_submitted' | 'leave_decided' | 'plan_changed' | 'chat_message';
 
 interface LeaveRequestRow {
   id: string;
@@ -49,6 +52,14 @@ interface PlanChangeRow {
   employee_ids: string[] | string | null;
 }
 
+/** Eine neue Nachricht im Chat einer Baustelle (0019). */
+interface SiteMessageRow {
+  id: string;
+  site_id: string;
+  employee_id: string;
+  body: string;
+}
+
 interface WebhookPayload {
   type: 'INSERT' | 'UPDATE' | 'DELETE';
   table: string;
@@ -63,6 +74,8 @@ interface Plan {
   title: string;
   body: string;
   tag: string;
+  /** Wohin ein Tipp auf die Nachricht führt. Ohne Angabe: die Startseite. */
+  url?: string;
 }
 
 const VAPID_PUBLIC_KEY = Deno.env.get('VAPID_PUBLIC_KEY') ?? '';
@@ -244,6 +257,57 @@ function planChangeNotifications(payload: WebhookPayload): Plan[] {
   ];
 }
 
+// ---------------------------------------------------------------------------
+// Chat je Baustelle
+// ---------------------------------------------------------------------------
+
+/** So viel vom Text, wie auf dem Sperrbildschirm sinnvoll lesbar ist. */
+const CHAT_PREVIEW = 120;
+
+function preview(text: string): string {
+  const flat = text.replace(/\s+/g, ' ').trim();
+  return flat.length > CHAT_PREVIEW ? `${flat.slice(0, CHAT_PREVIEW - 1)}…` : flat;
+}
+
+/**
+ * Eine neue Chat-Nachricht geht an alle aus der Mannschaft — dieselben, die
+ * den Chat lesen dürfen (is_staff() in 0019): aktive Maler und Büro. Das
+ * Anzeigekonto bekommt nichts, der Verfasser auch nicht.
+ */
+async function planChatNotifications(payload: WebhookPayload): Promise<Plan[]> {
+  if (payload.type !== 'INSERT') return [];
+  const record = payload.record as unknown as SiteMessageRow | null;
+  if (!record) return [];
+
+  const [{ data: staff }, { data: site }] = await Promise.all([
+    supabase.from('employees').select('id, role, active, first_name, last_name'),
+    supabase.from('sites').select('number, address').eq('id', record.site_id).maybeSingle(),
+  ]);
+
+  const everyone = staff ?? [];
+  const author = everyone.find((e) => e.id === record.employee_id);
+  const recipients = everyone
+    .filter((e) => (e.role === 'admin' || e.role === 'worker') && e.active !== false)
+    .filter((e) => e.id !== record.employee_id)
+    .map((e) => e.id as string);
+
+  const name = author ? `${author.first_name} ${author.last_name}` : 'Jemand';
+  const place = site ? `${site.number} · ${site.address}` : 'Baustelle';
+
+  return [
+    {
+      kind: 'chat_message',
+      employeeIds: recipients,
+      title: place,
+      body: `${name}: ${preview(record.body)}`,
+      // Je Baustelle ein Kennzeichen: Fünf Nachrichten hintereinander sind
+      // eine Meldung, die immer die neueste zeigt.
+      tag: `chat-${record.site_id}`,
+      url: `${APP_URL}?baustelle=${record.site_id}`,
+    },
+  ];
+}
+
 /**
  * Entfernt alle Empfänger, die diese Art abgeschaltet haben.
  *
@@ -282,7 +346,7 @@ async function deliver(plan: Plan, employeeIds: string[]): Promise<{ sent: numbe
     title: plan.title,
     body: plan.body,
     tag: plan.tag,
-    url: APP_URL,
+    url: plan.url ?? APP_URL,
   });
 
   let sent = 0;
@@ -345,6 +409,8 @@ Deno.serve(async (req) => {
     plans = await planLeaveNotifications(payload);
   } else if (payload.table === 'plan_change_events') {
     plans = planChangeNotifications(payload);
+  } else if (payload.table === 'site_messages') {
+    plans = await planChatNotifications(payload);
   } else {
     console.log(`Tabelle ${payload.table} ignoriert.`);
     return new Response(JSON.stringify({ sent: 0, reason: `Tabelle ${payload.table} ignoriert` }), {

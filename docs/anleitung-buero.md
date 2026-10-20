@@ -513,6 +513,11 @@ In der Baustelle:
 - **Chat** — für alles, was diese Baustelle betrifft. Löschen kann der
   Verfasser seine Nachricht, du jede.
 
+Neue Nachrichten erkennst du ohne Öffnen: Eine **rote Zahl** steht an der
+Baustelle in der Liste und am Reiter **Projekte** (am Handy ein roter Punkt am
+Menü). Sobald du die Baustelle öffnest, gilt der Chat als gelesen. Dazu kommt
+eine Push-Nachricht — siehe Abschnitt 13.
+
 ### Arbeitssicherheit
 
 **Verwaltung → Arbeitssicherheit.** Die PDFs hier erscheinen in jedem Projekt
@@ -726,10 +731,11 @@ reichen:
   einmal einschalten.
 - Die **Schalter darunter** gelten für dich auf **allen deinen Geräten**.
 
-Für ein Büro-Konto gibt es zwei Arten:
+Für ein Büro-Konto gibt es drei Arten:
 
 | Art | Wann sie kommt |
 | --- | --- |
+| Chat-Nachricht | Wenn jemand im Chat einer Baustelle schreibt. Ein Tipp öffnet die Baustelle. |
 | Neuer Urlaubsantrag | Wenn ein Mitarbeiter Urlaub beantragt. |
 | Urlaub entschieden | Wenn über deinen eigenen Antrag entschieden wurde. |
 

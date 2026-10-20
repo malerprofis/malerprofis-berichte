@@ -33,12 +33,17 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const target = (event.notification.data && event.notification.data.url) || self.registration.scope;
+  // Chat-Nachrichten tragen die Baustelle in der Adresse (?baustelle=<id>).
+  const siteId = new URL(target, self.registration.scope).searchParams.get('baustelle');
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
       // Ist die App schon offen, diese in den Vordergrund holen.
       for (const client of windows) {
         if (client.url.startsWith(self.registration.scope) && 'focus' in client) {
+          // Die offene App springt selbst zur Baustelle — ein Neuladen würde
+          // einen angefangenen Bericht verwerfen.
+          if (siteId) client.postMessage({ type: 'open-site', siteId });
           return client.focus();
         }
       }

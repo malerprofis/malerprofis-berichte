@@ -495,11 +495,12 @@ Es gibt zwei Ebenen, die verschieden weit reichen:
 - Die **Schalter darunter** gelten für **dich auf allen deinen Geräten**. Wer
   die Planänderung am Handy nicht will, will sie auch am Tablet nicht.
 
-Für dich gibt es zwei Arten:
+Für dich gibt es drei Arten:
 
 | Art | Wann sie kommt |
 | --- | --- |
 | Planänderung | Wenn das Büro einen deiner Einsätze anlegt, verschiebt oder streicht. |
+| Chat-Nachricht | Wenn jemand im Chat einer Baustelle schreibt. Ein Tipp öffnet die Baustelle. Unter **Projekte** zeigt eine rote Zahl, wo Ungelesenes wartet. |
 | Urlaub entschieden | Wenn dein Urlaubsantrag genehmigt oder abgelehnt wurde. |
 
 Die Erlaubnis fragt das Gerät erst beim Einschalten ab — nicht beim ersten

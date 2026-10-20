@@ -29,6 +29,8 @@ const DB = {
     { id: 'admin-2', role: 'admin', first_name: 'Otto', last_name: 'Office' },
     { id: 'maler-1', role: 'worker', first_name: 'Max', last_name: 'Maler' },
     { id: 'maler-2', role: 'worker', first_name: 'Mia', last_name: 'Maler' },
+    { id: 'tv-1', role: 'tv', first_name: 'Büro', last_name: 'Fernseher' },
+    { id: 'maler-alt', role: 'worker', active: false, first_name: 'Ole', last_name: 'Ehemalig' },
   ],
   sites: [
     { id: 'site-1', number: '040-7', address: 'Luisenweg 7' },
@@ -40,6 +42,8 @@ const DB = {
     { endpoint: 'ep-maler-1', employee_id: 'maler-1', p256dh: 'x', auth: 'y' },
     { endpoint: 'ep-maler-1b', employee_id: 'maler-1', p256dh: 'x', auth: 'y' }, // zweites Gerät
     { endpoint: 'ep-maler-2', employee_id: 'maler-2', p256dh: 'x', auth: 'y' },
+    { endpoint: 'ep-tv-1', employee_id: 'tv-1', p256dh: 'x', auth: 'y' },
+    { endpoint: 'ep-maler-alt', employee_id: 'maler-alt', p256dh: 'x', auth: 'y' },
   ],
   push_preferences: [],
   leave_requests: [],
@@ -281,6 +285,40 @@ const handler = await loadHandler();
 {
   const { body, messages } = await fire(handler, { type: 'INSERT', table: 'week_notes', record: { id: 'x' }, old_record: null });
   check('Unbekannte Tabelle wird ignoriert', messages.length === 0 && body.sent === 0, JSON.stringify(body));
+}
+
+// 9b. Chat-Nachricht -> ganze Mannschaft außer Verfasser, Fernseher und Ehemaligen
+{
+  const { messages } = await fire(handler, {
+    type: 'INSERT', table: 'site_messages',
+    record: { id: 'm-1', site_id: 'site-1', employee_id: 'maler-1', body: 'Schlüssel liegt\nbeim Hausmeister' },
+    old_record: null,
+  });
+  const endpoints = messages.map((m) => m.endpoint).sort();
+  check('Chat geht an Büro und andere Maler, nicht an Verfasser, TV oder Ehemalige',
+    JSON.stringify(endpoints) === JSON.stringify(['ep-admin-1', 'ep-admin-2', 'ep-maler-2']),
+    JSON.stringify(endpoints));
+  check('Chat-Titel nennt die Baustelle', messages[0]?.title === '040-7 · Luisenweg 7', messages[0]?.title);
+  check('Chat-Text nennt Verfasser und Nachricht in einer Zeile',
+    messages[0]?.body === 'Max Maler: Schlüssel liegt beim Hausmeister', messages[0]?.body);
+  check('Chat-Kennzeichen je Baustelle', messages[0]?.tag === 'chat-site-1', messages[0]?.tag);
+  check('Tipp öffnet die Baustelle', messages[0]?.url === 'https://app.test/?baustelle=site-1', messages[0]?.url);
+
+  DB.push_preferences = [{ employee_id: 'admin-1', kind: 'chat_message', enabled: false }];
+  const off = await fire(handler, {
+    type: 'INSERT', table: 'site_messages',
+    record: { id: 'm-2', site_id: 'site-1', employee_id: 'maler-2', body: 'x'.repeat(300) },
+    old_record: null,
+  });
+  const offEndpoints = off.messages.map((m) => m.endpoint).sort();
+  check('Abgeschalteter Chat bleibt stumm',
+    JSON.stringify(offEndpoints) === JSON.stringify(['ep-admin-2', 'ep-maler-1', 'ep-maler-1b']),
+    JSON.stringify(offEndpoints));
+  check('Lange Nachricht wird gekürzt', off.messages[0]?.body.length <= 'Mia Maler: '.length + 120, off.messages[0]?.body);
+  DB.push_preferences = [];
+
+  const del = await fire(handler, { type: 'DELETE', table: 'site_messages', record: null, old_record: { id: 'm-1' } });
+  check('Gelöschte Nachricht löst nichts aus', del.messages.length === 0);
 }
 
 // 10. Falsches Secret -> abgewiesen

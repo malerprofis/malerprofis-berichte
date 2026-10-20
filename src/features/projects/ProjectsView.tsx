@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Archive, ArchiveRestore, ChevronDown, ChevronRight, Loader2, Paperclip, Plus, Search } from 'lucide-react';
+import { Archive, ArchiveRestore, ChevronDown, ChevronRight, Loader2, MessageCircle, Paperclip, Plus, Search } from 'lucide-react';
 import { fetchArchivedSites } from '../../lib/data.ts';
 import { createSite, fetchFileUsage, setSiteActive } from '../../lib/project-data.ts';
 import { matchesSearch, projectSites } from '../../lib/projects.ts';
@@ -25,6 +25,7 @@ export default function ProjectsView({
   openSiteId,
   onOpenSite,
   onSitesChanged,
+  unreadCounts,
 }: {
   sites: Site[];
   employees: Employee[];
@@ -33,6 +34,8 @@ export default function ProjectsView({
   onOpenSite: (siteId: string | null) => void;
   /** Baustellen neu laden, nachdem das Büro etwas geändert hat. */
   onSitesChanged: () => Promise<void>;
+  /** Ungelesene Chat-Nachrichten je Baustelle (0022). */
+  unreadCounts: Map<string, number>;
 }) {
   const isAdmin = currentUser.role === 'admin';
   const [query, setQuery] = useState('');
@@ -160,11 +163,15 @@ export default function ProjectsView({
         <ul className="space-y-2">
           {list.map((site) => {
             const files = usage.get(site.id)?.count ?? 0;
+            const unread = unreadCounts.get(site.id) ?? 0;
             return (
               <li key={site.id}>
                 <button
                   onClick={() => onOpenSite(site.id)}
-                  className="w-full flex items-center gap-4 bg-white rounded-2xl p-4 border border-[#141414]/5 shadow-sm hover:border-brand-accent1/30 text-left cursor-pointer"
+                  className={
+                    'w-full flex items-center gap-4 bg-white rounded-2xl p-4 border shadow-sm hover:border-brand-accent1/30 text-left cursor-pointer ' +
+                    (unread > 0 ? 'border-red-200' : 'border-[#141414]/5')
+                  }
                 >
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm">{site.number}</p>
@@ -173,6 +180,15 @@ export default function ProjectsView({
                       <p className="text-xs text-[#141414]/40 truncate">{site.customer}</p>
                     )}
                   </div>
+                  {unread > 0 && (
+                    <span
+                      className="flex items-center gap-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+                      aria-label={`${unread} neue Nachrichten`}
+                    >
+                      <MessageCircle size={14} />
+                      {unread > 99 ? '99+' : unread}
+                    </span>
+                  )}
                   {files > 0 && (
                     <span className="flex items-center gap-1 text-xs text-[#141414]/50">
                       <Paperclip size={14} />

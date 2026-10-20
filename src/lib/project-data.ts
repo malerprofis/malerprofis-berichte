@@ -237,6 +237,58 @@ export function subscribeSiteMessages(
 }
 
 // ---------------------------------------------------------------------------
+// Ungelesene Nachrichten (0022)
+// ---------------------------------------------------------------------------
+
+/**
+ * Ungelesene fremde Nachrichten je Baustelle. Baustellen ohne Ungelesenes
+ * fehlen in der Antwort.
+ *
+ * Fehlt Migration 0022 noch, kommt eine leere Liste statt eines Fehlers: Der
+ * Chat selbst funktioniert auch ohne Zähler, und eine rote Meldung auf jeder
+ * Seite wäre schlimmer als ein fehlender Hinweis.
+ */
+export async function fetchUnreadCounts(): Promise<Map<string, number>> {
+  const { data, error } = await supabase.rpc('unread_site_messages');
+  if (error) {
+    console.warn('Ungelesene Nachrichten nicht abrufbar (Migration 0022 ausgeführt?):', error.message);
+    return new Map();
+  }
+  return new Map(
+    ((data ?? []) as { site_id: string; unread: number }[]).map((row) => [row.site_id, row.unread]),
+  );
+}
+
+/** Merkt sich, dass der Chat dieser Baustelle bis jetzt gelesen ist. */
+export async function markSiteRead(siteId: string): Promise<void> {
+  const { error } = await supabase.rpc('mark_site_read', { p_site_id: siteId });
+  if (error) console.warn('Lesestand nicht gespeichert:', error.message);
+}
+
+/**
+ * Hört auf neue und gelöschte Nachrichten aller Baustellen — für die Zähler
+ * in der Liste und am Reiter. Den Fernseher erreicht nichts davon, das regelt
+ * site_messages_select.
+ */
+export function subscribeAllSiteMessages(handlers: {
+  onInsert: (m: SiteMessage) => void;
+  onDelete: () => void;
+}): () => void {
+  const channel = supabase
+    .channel('site-chat-unread')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'site_messages' }, (payload) =>
+      handlers.onInsert(payload.new as SiteMessage),
+    )
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'site_messages' }, () =>
+      handlers.onDelete(),
+    )
+    .subscribe();
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Baustellen anlegen und pflegen (früher unter Verwaltung)
 // ---------------------------------------------------------------------------
 
