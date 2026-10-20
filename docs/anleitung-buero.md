@@ -83,8 +83,9 @@ gebraucht wird, steht also zuerst.
 
 ## 2. Anmelden und einrichten
 
-Anmeldung, Installation auf dem Home-Bildschirm und das Verhalten ohne Netz
-sind dieselben wie bei den Malern — nachzulesen in deren Anleitung.
+Die App liegt unter **app.malerprofis.hamburg**. Anmeldung, Installation auf
+dem Home-Bildschirm und das Verhalten ohne Netz sind dieselben wie bei den
+Malern — nachzulesen in deren Anleitung.
 
 ### Was du zusätzlich einrichten solltest
 
@@ -511,7 +512,13 @@ In der Baustelle:
   mit **Hochladen** an diese Baustelle hängst: PDFs bleiben unverändert, Fotos
   werden automatisch verkleinert. Hochladen und löschen kann nur das Büro.
 - **Chat** — für alles, was diese Baustelle betrifft. Löschen kann der
-  Verfasser seine Nachricht, du jede.
+  Verfasser seine Nachricht, du jede. Neue Nachrichten lösen **noch keine
+  Benachrichtigung** aus, und Fotos lassen sich im Chat noch nicht schicken.
+
+> **Was die Maler hier sehen:** Vorgaben, Unterlagen, den Ordner
+> Arbeitssicherheit und den Chat — nur ohne Stift, Hochladen, Löschen und
+> Archivkasten. Was du in die Vorgaben schreibst, ist also für die ganze
+> Mannschaft zu lesen.
 
 ### Arbeitssicherheit
 
@@ -681,8 +688,8 @@ Ein Bildschirm an der Bürowand, auf dem die Woche und der Urlaubsplan stehen.
 ### Einrichten
 
 1. **Verwaltung → Benutzer → Benutzer anlegen**, Rolle **Anzeige (Fernseher)**.
-2. An einem kleinen Rechner am HDMI-Anschluss Chrome im Kiosk-Modus auf die
-   Adresse der App richten.
+2. An einem kleinen Rechner am HDMI-Anschluss Chrome im Kiosk-Modus auf
+   `https://app.malerprofis.hamburg/` richten.
 3. Einmal mit dem Anzeigekonto anmelden — die Sitzung hält monatelang.
 
 > **Das Anzeigekonto darf ausschließlich lesen.** Es kommt an keine
@@ -776,6 +783,8 @@ Home-Bildschirm" installierten App.
 | Bei einem Urlaubsantrag | Entscheiden. Vor dem Genehmigen die betroffenen Einsätze notieren. |
 | Montags | Wochenberichte der Vorwoche prüfen und als PDF ablegen. |
 | Laufend | Abnahmeprotokolle sichten, bei Mängeln die Frist im Blick behalten. |
+| Neue Baustelle | In Projekte anlegen, Adresse vollständig, Pläne hochladen, Vorgaben schreiben. |
+| Baustelle fertig | Archivieren — vorher Pläne sichern, danach das Chat-PDF ablegen. |
 | Monatlich | Auslagen je Mitarbeiter abschließen und das PDF ablegen. |
 | Jahreswechsel | Resturlaub über die Palme nachziehen. |
 
