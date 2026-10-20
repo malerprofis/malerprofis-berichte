@@ -29,7 +29,8 @@ import {
   Settings,
   Lock,
   Receipt,
-  FolderOpen
+  FolderOpen,
+  ExternalLink,
 } from 'lucide-react';
 import SignatureCanvas from 'react-signature-canvas';
 import { motion, AnimatePresence } from 'motion/react';
@@ -37,6 +38,7 @@ import { de } from 'date-fns/locale';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { buildAbnahmePdf } from './lib/abnahme-pdf.ts';
+import { IMPRESSUM_URL } from './lib/legal.ts';
 import Logo from './components/Logo.tsx';
 import AdminPanel from './features/admin/AdminPanel.tsx';
 import WeekGrid from './features/planning/WeekGrid.tsx';
@@ -1868,6 +1870,16 @@ export default function App() {
                         </button>
                       </div>
                     </div>
+
+                    <a
+                      href={IMPRESSUM_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-6 flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-sm font-bold text-gray-900">Impressum</span>
+                      <ExternalLink size={16} className="text-[#141414]/40" />
+                    </a>
 
                     {currentUser && (
                       <div className="p-6">
