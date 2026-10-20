@@ -159,7 +159,7 @@ Repository.
 | `VAPID_PRIVATE_KEY` | privater Schlüssel aus Schritt 1 |
 | `VAPID_SUBJECT` | `mailto:` + eure Büro-Mailadresse |
 | `WEBHOOK_SECRET` | ein selbst ausgedachtes langes Passwort |
-| `APP_URL` | `https://timstuu.github.io/malerprofis-berichte/` |
+| `APP_URL` | `https://app.malerprofis.hamburg/` |
 
 `SUPABASE_URL` und `SUPABASE_SERVICE_ROLE_KEY` stehen automatisch zur Verfügung
 und müssen nicht eingetragen werden.
@@ -217,7 +217,7 @@ der Fernseher erst beim nächsten Neuladen aktuell.
 einmalig ca. 100–200 €) am HDMI-Anschluss mit Chrome im Kiosk-Modus:
 
 ```
-chrome --kiosk --app=https://timstuu.github.io/malerprofis-berichte/
+chrome --kiosk --app=https://app.malerprofis.hamburg/
 ```
 
 Einmal mit dem Anzeigekonto anmelden — die Sitzung hält monatelang. Danach
