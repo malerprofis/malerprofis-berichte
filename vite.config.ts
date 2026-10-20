@@ -20,7 +20,8 @@ function buildDate(): string {
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: mode === 'production' ? '/malerprofis-berichte/' : '/',
+    // Die App läuft unter https://app.malerprofis.hamburg/ direkt im Wurzelverzeichnis.
+    base: '/',
     plugins: [
       react(),
       tailwindcss(),
@@ -42,8 +43,8 @@ export default defineConfig(({mode}) => {
           orientation: 'portrait',
           start_url: '.',
           // Ohne führenden Schrägstrich: Die Pfade gelten ab der Datei
-          // manifest.webmanifest und treffen damit auch unter
-          // /malerprofis-berichte/ das richtige Verzeichnis.
+          // manifest.webmanifest. So bleiben sie richtig, falls die App wieder
+          // einmal in einem Unterverzeichnis ausgeliefert wird.
           icons: [
             { src: 'icons/android-icon-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
             { src: 'icons/android-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' }
