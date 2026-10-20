@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { LogIn, Loader2 } from 'lucide-react';
 import { useAuth } from '../lib/auth.tsx';
 import Logo from './Logo.tsx';
+import { IMPRESSUM_URL } from '../lib/legal.ts';
 
 /**
  * Anmeldung mit E-Mail und Passwort.
@@ -26,8 +27,8 @@ export default function LoginScreen() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-bg p-6">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen flex flex-col bg-brand-bg p-6">
+      <div className="flex-1 w-full max-w-sm mx-auto flex flex-col justify-center">
         <div className="flex justify-center mb-8">
           <Logo className="h-20 w-auto" />
         </div>
@@ -94,6 +95,18 @@ export default function LoginScreen() {
           Passwort vergessen? Bitte im Büro melden.
         </p>
       </div>
+
+      {/* Ganz unten, unabhängig von der Höhe des Formulars. */}
+      <p className="text-center text-xs pt-6">
+        <a
+          href={IMPRESSUM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-400 hover:text-gray-600 underline underline-offset-2"
+        >
+          Impressum
+        </a>
+      </p>
     </div>
   );
 }
