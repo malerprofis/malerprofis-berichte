@@ -390,24 +390,39 @@ export default function UserManagement({
           return (
             <div key={employee.id} className="border-b border-[#141414]/5 last:border-none">
               {startsGroup && (
-                <p className="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#141414]/40">
+                <p className="px-3 sm:px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#141414]/40">
                   {ROLE_LABEL[employee.role]}
                 </p>
               )}
               <div
-                className={`p-4 flex flex-wrap items-center justify-between gap-3 ${
+                className={`px-3 py-3 sm:p-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 ${
                   employee.active ? '' : 'opacity-50'
                 }`}
               >
-                <div className="min-w-0 flex items-center gap-3">
-                  {employee.role === 'tv' ? (
-                    <Icon size={18} className="text-[#141414]/30 shrink-0" />
+                <div className="min-w-0 flex-1 basis-48 flex items-center gap-2 sm:gap-3">
+                  {employee.role === 'worker' ? (
+                    <div className="flex flex-col shrink-0">
+                      <button
+                        onClick={() => moveWorker(employee, -1)}
+                        disabled={busyId !== null || workers[0]?.id === employee.id}
+                        className="p-1 text-gray-500 hover:text-brand-accent1 hover:bg-gray-50 rounded-lg cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Nach oben schieben (auch in der Wochenplanung)"
+                        aria-label={`${employee.first_name} ${employee.last_name} nach oben`}
+                      >
+                        <ChevronUp size={16} />
+                      </button>
+                      <button
+                        onClick={() => moveWorker(employee, 1)}
+                        disabled={busyId !== null || workers[workers.length - 1]?.id === employee.id}
+                        className="p-1 text-gray-500 hover:text-brand-accent1 hover:bg-gray-50 rounded-lg cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Nach unten schieben (auch in der Wochenplanung)"
+                        aria-label={`${employee.first_name} ${employee.last_name} nach unten`}
+                      >
+                        <ChevronDown size={16} />
+                      </button>
+                    </div>
                   ) : (
-                    <span
-                      className="w-[18px] h-[18px] rounded-md shrink-0 border border-black/10"
-                      style={{ backgroundColor: colorOf(employee).swatch }}
-                      title={`Farbe: ${colorOf(employee).label}`}
-                    />
+                    <Icon size={18} className="text-[#141414]/30 shrink-0" />
                   )}
                   <div className="min-w-0">
                     <p className="font-semibold text-sm truncate">
@@ -427,33 +442,11 @@ export default function UserManagement({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="ml-auto flex items-center gap-1 sm:gap-1.5 shrink-0">
                   {busyId === employee.id ? (
                     <Loader2 size={18} className="animate-spin text-brand-accent1" />
                   ) : (
                     <>
-                      {employee.role === 'worker' && (
-                        <>
-                          <button
-                            onClick={() => moveWorker(employee, -1)}
-                            disabled={workers[0]?.id === employee.id}
-                            className="p-2 text-gray-500 hover:text-brand-accent1 hover:bg-gray-50 rounded-xl cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                            title="Nach oben schieben (auch in der Wochenplanung)"
-                            aria-label={`${employee.first_name} ${employee.last_name} nach oben`}
-                          >
-                            <ChevronUp size={16} />
-                          </button>
-                          <button
-                            onClick={() => moveWorker(employee, 1)}
-                            disabled={workers[workers.length - 1]?.id === employee.id}
-                            className="p-2 text-gray-500 hover:text-brand-accent1 hover:bg-gray-50 rounded-xl cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                            title="Nach unten schieben (auch in der Wochenplanung)"
-                            aria-label={`${employee.first_name} ${employee.last_name} nach unten`}
-                          >
-                            <ChevronDown size={16} />
-                          </button>
-                        </>
-                      )}
                       <select
                         value={employee.role}
                         onChange={(e) => changeRole(employee, e.target.value as Role)}
@@ -519,7 +512,7 @@ export default function UserManagement({
               </div>
 
               {colorFor === employee.id && (
-                <div className="px-4 pb-4 -mt-1">
+                <div className="px-3 pb-3 sm:px-4 sm:pb-4 -mt-1">
                   <div className="flex flex-wrap gap-2 bg-gray-50 border border-gray-100 rounded-2xl p-3">
                     {EMPLOYEE_COLORS.map((c) => (
                       <button
