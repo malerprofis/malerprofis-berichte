@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, KeyRound, Loader2, ShieldCheck, Monitor, HardHat, RefreshCw, Palmtree, Check } from 'lucide-react';
+import { Plus, Trash2, KeyRound, Loader2, ShieldCheck, Monitor, HardHat, RefreshCw, Palmtree, Check, ChevronUp, ChevronDown } from 'lucide-react';
 import { EMPLOYEE_COLORS, colorOf, nextFreeColor } from '../../lib/colors.ts';
 import {
   createUser,
@@ -216,8 +216,35 @@ export default function UserManagement({
     setBusyId(null);
   };
 
-  // Gruppiert nach Art des Benutzers, darin nach Nachname aufsteigend.
+  // Gruppiert nach Art des Benutzers, darin in der festgelegten Reihenfolge.
   const sorted = sortEmployees(employees);
+  const workers = sorted.filter((e) => e.role === 'worker');
+
+  /**
+   * Maler eine Stelle nach oben oder unten schieben. Danach bekommen alle
+   * Maler ihre Position fest gespeichert, damit auch die bisher nur
+   * alphabetisch einsortierten nicht mehr verrutschen.
+   */
+  const moveWorker = async (employee: Employee, step: -1 | 1) => {
+    const from = workers.findIndex((e) => e.id === employee.id);
+    const to = from + step;
+    if (from < 0 || to < 0 || to >= workers.length) return;
+    const order = [...workers];
+    [order[from], order[to]] = [order[to], order[from]];
+
+    setError(null);
+    setBusyId(employee.id);
+    const results = await Promise.all(
+      order
+        .map((e, i) => ({ e, i }))
+        .filter(({ e, i }) => e.sort_order !== i)
+        .map(({ e, i }) => supabase.from('employees').update({ sort_order: i }).eq('id', e.id)),
+    );
+    const failed = results.find((r) => r.error);
+    if (failed?.error) setError(failed.error.message);
+    await onChanged();
+    setBusyId(null);
+  };
 
   return (
     <section className="space-y-4">
@@ -405,6 +432,28 @@ export default function UserManagement({
                     <Loader2 size={18} className="animate-spin text-brand-accent1" />
                   ) : (
                     <>
+                      {employee.role === 'worker' && (
+                        <>
+                          <button
+                            onClick={() => moveWorker(employee, -1)}
+                            disabled={workers[0]?.id === employee.id}
+                            className="p-2 text-gray-500 hover:text-brand-accent1 hover:bg-gray-50 rounded-xl cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Nach oben schieben (auch in der Wochenplanung)"
+                            aria-label={`${employee.first_name} ${employee.last_name} nach oben`}
+                          >
+                            <ChevronUp size={16} />
+                          </button>
+                          <button
+                            onClick={() => moveWorker(employee, 1)}
+                            disabled={workers[workers.length - 1]?.id === employee.id}
+                            className="p-2 text-gray-500 hover:text-brand-accent1 hover:bg-gray-50 rounded-xl cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Nach unten schieben (auch in der Wochenplanung)"
+                            aria-label={`${employee.first_name} ${employee.last_name} nach unten`}
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </>
+                      )}
                       <select
                         value={employee.role}
                         onChange={(e) => changeRole(employee, e.target.value as Role)}

@@ -123,7 +123,8 @@ const ROLE_ORDER: Record<Role, number> = {
 
 /**
  * Einheitliche Reihenfolge für alle Personenlisten: erst die Art des Kontos
- * (Büro, Maler, Anzeige), darin nach Nachname aufsteigend.
+ * (Büro, Maler, Anzeige), darin nach der vom Büro festgelegten Reihenfolge
+ * (`sort_order`, 0023), wer keine hat dahinter nach Nachname aufsteigend.
  *
  * Bewusst an einer Stelle: Benutzerverwaltung, Wochenplanung und der Fernseher
  * zeigen dieselben Leute. Liefe jede Ansicht nach eigener Regel, stünde dieselbe
@@ -132,12 +133,13 @@ const ROLE_ORDER: Record<Role, number> = {
  * `localeCompare` mit 'de', damit Umlaute dort einsortiert werden, wo man sie
  * sucht — sonst landet Ötken hinter Zimmermann.
  */
-export function sortEmployees<T extends Pick<Employee, 'role' | 'first_name' | 'last_name'>>(
-  employees: T[],
-): T[] {
+export function sortEmployees<
+  T extends Pick<Employee, 'role' | 'first_name' | 'last_name'> & { sort_order?: number | null },
+>(employees: T[]): T[] {
   return [...employees].sort(
     (a, b) =>
       ROLE_ORDER[a.role] - ROLE_ORDER[b.role] ||
+      (a.sort_order ?? Infinity) - (b.sort_order ?? Infinity) ||
       a.last_name.localeCompare(b.last_name, 'de') ||
       a.first_name.localeCompare(b.first_name, 'de'),
   );

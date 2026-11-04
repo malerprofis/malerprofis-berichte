@@ -19,6 +19,8 @@ export interface Employee {
   active: boolean;
   /** Bezeichner aus der Palette in colors.ts, nicht der Farbwert selbst. */
   color: string | null;
+  /** Vom Büro festgelegte Reihenfolge (0023); null steht hinten. */
+  sort_order?: number | null;
   created_at?: string;
 }
 

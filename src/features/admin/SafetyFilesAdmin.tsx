@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { FileText, Folder, FolderPlus, Loader2, Pencil, RefreshCw, ShieldCheck, Trash2, Upload } from 'lucide-react';
+import { ChevronRight, FileText, Folder, FolderPlus, Loader2, Pencil, RefreshCw, ShieldCheck, Trash2, Upload } from 'lucide-react';
 import {
   deleteSafetyFile,
   fetchSafetyFiles,
@@ -30,6 +30,8 @@ export default function SafetyFilesAdmin({ currentUserId }: { currentUserId: str
   const [urls, setUrls] = useState<Record<string, string>>({});
   /** Frisch angelegte Ordner, in denen noch keine Datei liegt. */
   const [newFolders, setNewFolders] = useState<string[]>([]);
+  /** Aufgeklappte Ordner. Anfangs sind alle zu, damit die Liste kurz bleibt. */
+  const [openFolders, setOpenFolders] = useState<string[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const addInput = useRef<HTMLInputElement>(null);
@@ -76,6 +78,8 @@ export default function SafetyFilesAdmin({ currentUserId }: { currentUserId: str
     event.target.value = '';
     if (chosen.length === 0) return;
     const folder = uploadFolder.current;
+    // Hochgeladenes soll man sehen, auch wenn der Ordner gerade zu war.
+    if (folder && !openFolders.includes(folder)) setOpenFolders((prev) => [...prev, folder]);
     const start = files.reduce((max, f) => Math.max(max, f.position), 0) + 1;
     await act('Lade hoch …', async () => {
       for (const [i, file] of chosen.entries()) {
@@ -101,12 +105,17 @@ export default function SafetyFilesAdmin({ currentUserId }: { currentUserId: str
       return;
     }
     setNewFolders((prev) => [...prev, name]);
+    setOpenFolders((prev) => [...prev, name]);
   };
+
+  const toggleFolder = (name: string) =>
+    setOpenFolders((prev) => (prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]));
 
   const renameFolder = async (from: string) => {
     const to = cleanFolder(window.prompt('Neuer Name des Ordners:', from));
     if (!to || to === from) return;
     setNewFolders((prev) => prev.map((n) => (n === from ? to : n)));
+    setOpenFolders((prev) => prev.map((n) => (n === from ? to : n)));
     if (files.some((f) => f.folder === from)) {
       await act('Benenne um …', () => renameSafetyFolder(from, to));
     }
@@ -224,11 +233,27 @@ export default function SafetyFilesAdmin({ currentUserId }: { currentUserId: str
         </p>
       )}
 
-      {groups.folders.map((folder) => (
+      {groups.folders.map((folder) => {
+        const isOpen = openFolders.includes(folder.name);
+        return (
         <div key={folder.name} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-[#141414]/5">
-          <div className="flex items-center gap-2 px-4 py-3 bg-amber-50/60 border-b border-amber-100">
-            <Folder size={18} className="text-amber-600" />
-            <span className="flex-1 text-sm font-bold truncate">{folder.name}</span>
+          <div
+            className={`flex items-center gap-2 px-4 py-3 bg-amber-50/60 ${isOpen ? 'border-b border-amber-100' : ''}`}
+          >
+            <button
+              onClick={() => toggleFolder(folder.name)}
+              aria-expanded={isOpen}
+              className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer"
+              title={isOpen ? 'Zuklappen' : 'Aufklappen'}
+            >
+              <ChevronRight
+                size={16}
+                className={`text-amber-600 shrink-0 transition-transform ${isOpen ? 'rotate-90' : ''}`}
+              />
+              <Folder size={18} className="text-amber-600 shrink-0" />
+              <span className="text-sm font-bold truncate">{folder.name}</span>
+              <span className="text-xs text-[#141414]/40 shrink-0">{folder.files.length}</span>
+            </button>
             <button
               onClick={() => renameFolder(folder.name)}
               disabled={busy !== null}
@@ -240,14 +265,15 @@ export default function SafetyFilesAdmin({ currentUserId }: { currentUserId: str
             </button>
             {uploadButton(folder.name, 'PDF hierher')}
           </div>
-          {folder.files.map(fileRow)}
-          {folder.files.length === 0 && (
+          {isOpen && folder.files.map(fileRow)}
+          {isOpen && folder.files.length === 0 && (
             <p className="p-4 text-sm text-[#141414]/40">
               Noch leer. Ein Ordner ohne Datei wird nicht gespeichert.
             </p>
           )}
         </div>
-      ))}
+        );
+      })}
 
       <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-[#141414]/5">
         {groups.folders.length > 0 && (
